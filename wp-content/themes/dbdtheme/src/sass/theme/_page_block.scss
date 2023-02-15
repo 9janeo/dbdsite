@@ -1,0 +1,27 @@
+section.page-block{
+  margin: 1rem 0;
+  padding: 0.4rem;
+
+  .header {
+    margin: 1rem 0;
+  }
+
+  .post-list {
+    margin-bottom: 1rem;
+    .list-item {
+      display: flex;
+      align-items: stretch;
+      .post{
+        border: solid 1px $lightshade;
+        border-radius: 5px;
+        .entry-footer { display: none;}
+      }
+    }
+  }
+
+  @media only screen and (max-width: 991px) {
+    .post-list {
+      gap: 1rem;
+    }
+  }
+}

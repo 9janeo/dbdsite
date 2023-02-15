@@ -1,0 +1,69 @@
+.page-header {
+  margin-bottom: 1.5rem;
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+  }
+}
+
+nav.post-navigation{
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: #cacaca;
+  .nav-links{
+    span{
+      max-width: 50%;
+      &.previous-nav{
+        border-right: solid 1px #aaa;
+      }
+      a>i{
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.entry-title {
+  &.card-title {
+    font-size: 1.4rem;
+  }
+}
+
+blockquote, .wp-block-quote {
+  margin: 0 0 2rem;
+  @include quote;
+  cite {
+    color: $darkred;
+  }
+}
+
+.list-item {
+  .card {
+    .card-img-top {
+      min-height: 75px;
+      max-height: 275px;
+      background-size: contain;
+      background-position: center bottom;
+      background-color: #000;
+      background-repeat: no-repeat;
+      overflow: hidden;
+      img {
+        visibility: hidden;
+      }
+    }
+    h2.card-title {
+      a {
+        color: $dbd;
+        &:hover {
+          color: $darkred;
+        }
+      }
+    }
+    .card-body{
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+  }
+}

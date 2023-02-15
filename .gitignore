@@ -1,0 +1,14 @@
+wp-content/upgrade/*
+wp-content/backup-db/*
+wp-content/cache/*
+wp-content/cache/supercache/*
+wp-content/w3tc-cache/*
+
+wp-content/themes/dbdtheme/.sass-cache
+wp-content/themes/dbdtheme/bower_components
+wp-content/themes/dbdtheme/node_modules
+wp-content/themes/dbdtheme/understrap.zip
+wp-content/themes/dbdtheme/dist
+wp-content/themes/dbdtheme/dist-product
+wp-content/themes/dbdtheme/npm-debug.log
+wp-content/themes/dbdtheme/vendor/

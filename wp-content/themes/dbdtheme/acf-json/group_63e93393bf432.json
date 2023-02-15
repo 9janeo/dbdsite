@@ -1,0 +1,43 @@
+{
+    "key": "group_63e93393bf432",
+    "title": "API Settings",
+    "fields": [
+        {
+            "key": "field_63e933958ebdd",
+            "label": "Youtube API Key",
+            "name": "Youtube_API_key",
+            "aria-label": "",
+            "type": "password",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "theme-settings"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1676227630
+}

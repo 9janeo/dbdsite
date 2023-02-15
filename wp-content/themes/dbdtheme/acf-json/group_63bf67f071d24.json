@@ -1,0 +1,106 @@
+{
+    "key": "group_63bf67f071d24",
+    "title": "Page Blocks",
+    "fields": [
+        {
+            "key": "field_63bf684fab7a0",
+            "label": "List",
+            "name": "list",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "Select the list to load in this page block",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "layout": "table",
+            "pagination": 0,
+            "min": 0,
+            "max": 0,
+            "collapsed": "",
+            "button_label": "Add List",
+            "rows_per_page": 20,
+            "sub_fields": [
+                {
+                    "key": "field_63bf67f3ec6b1",
+                    "label": "Title",
+                    "name": "title",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_63bf684fab7a0"
+                },
+                {
+                    "key": "field_63bf8576eacea",
+                    "label": "rankings",
+                    "name": "rankings",
+                    "aria-label": "",
+                    "type": "relationship",
+                    "instructions": "Select posts to add to this list",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "post_type": [
+                        "post"
+                    ],
+                    "taxonomy": [
+                        "category:rankings",
+                        "category:accusamus-ea-est-eos-nemo",
+                        "category:ducimus-perspiciatis-rerum-est",
+                        "category:harum-laudantium-ratione-provident",
+                        "category:reaction",
+                        "category:review",
+                        "category:uncategorized",
+                        "category:ut-nostrum-est-vitae"
+                    ],
+                    "filters": [
+                        "taxonomy"
+                    ],
+                    "return_format": "id",
+                    "min": 0,
+                    "max": 5,
+                    "elements": "",
+                    "parent_repeater": "field_63bf684fab7a0"
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "page"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1673497452
+}
