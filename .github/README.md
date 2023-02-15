@@ -1,4 +1,4 @@
-<p align="center"><img src="https://understrap.com/wp-content/uploads/2022/02/Understrap_Logo_Color.svg" width="320" height="auto"></p>
+<p align="center"><img src="./wp-content/uploads/2023/02/channels4_banner-768x432.jpg" width="320" height="auto"></p>
 
 #### See: [Official Demo](https://demos.understrap.com) | Read: [Official Docs Page](https://docs.understrap.com/)
 
