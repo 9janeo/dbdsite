@@ -8,6 +8,8 @@
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
+require_once('lib/custom_taxonomies.php');
+require_once('lib/youtube-interface.php');
 
 
 /**
@@ -85,6 +87,19 @@ function understrap_child_customize_controls_js() {
 	);
 }
 add_action( 'customize_controls_enqueue_scripts', 'understrap_child_customize_controls_js' );
+
+// Error logs wp_remote calls
+if( ! function_exists( 'debug_wp_remote_post_and_get_request' ) ) :
+  function debug_wp_remote_post_and_get_request( $response, $context, $class, $r, $url ) {
+    error_log( '------------------------------' );
+    error_log( $url );
+    error_log( json_encode( $response ) );
+    error_log( $class );
+    error_log( $context );
+    error_log( json_encode( $r ) );
+	}
+	add_action( 'http_api_debug', 'debug_wp_remote_post_and_get_request', 10, 5 );
+endif;
 
 function dis_by_dem_video_info($post_ID, $post){
 	$yt_key = get_field('Youtube_API_key', 'options');

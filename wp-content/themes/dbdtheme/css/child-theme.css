@@ -14519,8 +14519,10 @@ figure.woocommerce-product-gallery__wrapper {
   border-top: #ce2d19 solid 1px;
 }
 
-#wrapper-footer {
-  background-color: #333;
+#wrapper-footer.bg-dark {
+  color: #fff;
+}
+#wrapper-footer.bg-dark .site-info a {
   color: #fff;
 }
 
