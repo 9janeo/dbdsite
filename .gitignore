@@ -9,6 +9,7 @@ wp-content/cache/supercache/*
 wp-content/w3tc-cache/*
 
 wp-content/themes/.DS_Store
+wp-content/themes/understrap
 wp-content/themes/disbydem
 wp-content/themes/dbdtheme/.sass-cache
 wp-content/themes/dbdtheme/bower_components
