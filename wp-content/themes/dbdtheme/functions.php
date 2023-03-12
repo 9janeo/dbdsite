@@ -9,7 +9,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once('lib/custom_taxonomies.php');
-require_once('lib/youtube-interface.php');
+require_once('lib/ytapi/youtube-interface.php');
 
 
 /**
@@ -101,28 +101,28 @@ if( ! function_exists( 'debug_wp_remote_post_and_get_request' ) ) :
 	add_action( 'http_api_debug', 'debug_wp_remote_post_and_get_request', 10, 5 );
 endif;
 
-function dis_by_dem_video_info($post_ID, $post){
-	$yt_key = get_field('Youtube_API_key', 'options');
+// function dis_by_dem_video_info($post_ID, $post){
+// 	$yt_key = get_field('Youtube_API_key', 'options');
 	
-	if(get_field('video_link')):
-		$url = get_field('video_link');
-		parse_str(parse_url($url, PHP_URL_QUERY), $arr_of_vars );
-		$id = $arr_of_vars['v'];
+// 	if(get_field('video_link')):
+// 		$url = get_field('video_link');
+// 		parse_str(parse_url($url, PHP_URL_QUERY), $arr_of_vars );
+// 		$id = $arr_of_vars['v'];
 
-		$req_url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=".$id."&key=".$yt_key;
-		$response = wp_remote_get($req_url);
-		$code = wp_remote_retrieve_response_code($response);
-		$result = json_decode(wp_remote_retrieve_body( $response ));
-		if ($code == 200){
-			$vid_snippet = json_decode($result->items[0]->snippet);
-			update_post_meta($post_ID, 'video_info', $vid_snippet);
-			// $vid_title = $vid_snippet->title;
-			// $vid_desc = $vid_snippet->description;
-			// $vid_published = $vid_snippet->publishedAt;
-		}
-	endif;
-}
-add_action( 'save_post','dis_by_dem_video_info', 10, 2);
+// 		$req_url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=".$id."&key=".$yt_key;
+// 		$response = wp_remote_get($req_url);
+// 		$code = wp_remote_retrieve_response_code($response);
+// 		$result = json_decode(wp_remote_retrieve_body( $response ));
+// 		if ($code == 200){
+// 			$vid_snippet = json_decode($result->items[0]->snippet);
+// 			update_post_meta($post_ID, 'video_info', $vid_snippet);
+// 			// $vid_title = $vid_snippet->title;
+// 			// $vid_desc = $vid_snippet->description;
+// 			// $vid_published = $vid_snippet->publishedAt;
+// 		}
+// 	endif;
+// }
+// add_action( 'save_post','dis_by_dem_video_info', 10, 2);
 
 if( function_exists('acf_add_options_page') ) {
     
