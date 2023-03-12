@@ -3,6 +3,12 @@
 }
 
 #wrapper-footer {
-  background-color: #333;
-  color: #fff;
+  &.bg-dark {
+    color: #fff;
+    .site-info {
+      a {
+        color: #fff;        
+      }
+    }
+  }
 }
