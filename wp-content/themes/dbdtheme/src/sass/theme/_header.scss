@@ -11,6 +11,9 @@
           a.nav-link {
             color: $dbd;
           }
+          a.external {
+            @include external();
+          }
           .dropdown-menu.show{
             color: $dbd;
             background-color: $dark;

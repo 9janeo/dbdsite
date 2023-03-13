@@ -139,9 +139,6 @@ if ( ! class_exists( 'Understrap_WP_Bootstrap_Navwalker' ) ) {
 			if ( isset( $args->has_children ) && $args->has_children ) {
 				$classes[] = 'dropdown';
 			}
-			if ( isset($item->target) && $item->target === "_blank") {
-				$classes[] = 'external';
-			}
 			if ( in_array( 'current-menu-item', $classes, true ) || in_array( 'current-menu-parent', $classes, true ) ) {
 				$classes[] = 'active';
 			}
@@ -207,7 +204,14 @@ if ( ! class_exists( 'Understrap_WP_Bootstrap_Navwalker' ) ) {
 					$atts['class'] = 'dropdown-item';
 				} else {
 					$atts['class'] = 'nav-link';
-				}
+					if ( isset($atts['target']) && $atts['target'] === "_blank") {
+						$atts['class'] .= ' external';
+					}
+				}								
+				// if ( isset($atts['target']) && $atts['target'] === "_blank") {
+				// 	// $atts['class'] .= ' fa fa-external-link-square';
+				// 	$args->after = '<i class="fa fa-external-link-square"></i>';
+				// }
 			}
 
 			$atts['aria-current'] = $item->current ? 'page' : '';
