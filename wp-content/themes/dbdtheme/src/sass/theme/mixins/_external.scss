@@ -1,0 +1,12 @@
+// scss-docs-start external-mixins
+@mixin external {
+  border-bottom: 0;
+  white-space: nowrap;
+  &:after {
+    @extend .fa;
+    content: "\f14c";
+    display: inline-block;
+    margin-left: $caret-spacing;
+  }
+}
+// scss-docs-end external-mixins
