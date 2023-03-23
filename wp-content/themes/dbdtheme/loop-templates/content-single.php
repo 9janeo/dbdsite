@@ -27,9 +27,8 @@ defined( 'ABSPATH' ) || exit;
 
 	<footer class="entry-footer">
 		<?php
-			$meta = $post->video_info;
 			$url = get_field('video_link');
-			$vid_exists = metadata_exists('post', $post->ID, 'video_info');
+			$vid_exists = metadata_exists('post', $post->ID, 'video_link');
 			if ($vid_exists) :
 				$yt_meta = get_post_meta( $post->ID ,'video_info')[0];
 				$thumb = $yt_meta->thumbnails->high->url;
