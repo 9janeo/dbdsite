@@ -12,31 +12,3 @@ $shade: #2f2f2f;
 $dark: #111;
 $backdrop: rgba(0, 0, 0, 0.5);
 $primary: $purple;  // Once we've changed the value, we'll also make it the primary brand color.
-
-
-@mixin bound {
-  border: $lightshade 1px solid;
-  border-radius: 5px;
-  padding: 1rem;
-}
-
-@mixin quote {
-  border-radius: 2rem;
-  position: relative;
-  background: $lightshade;
-  padding: 2rem;
-  &:after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border: 20px solid transparent;
-    border-top-color: $lightshade;
-    border-bottom: 0;
-    border-left: 0;
-    margin-left: -10px;
-    margin-bottom: -20px
-  }
-}

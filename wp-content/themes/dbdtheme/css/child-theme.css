@@ -11422,7 +11422,7 @@ figure.woocommerce-product-gallery__wrapper {
   font-weight: normal;
   font-style: normal;
 }
-.fa {
+.fa, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .menu-item a.external:after, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .nav-item a.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .menu-item a.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .nav-item a.external:after {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
@@ -11493,10 +11493,10 @@ figure.woocommerce-product-gallery__wrapper {
   float: right;
 }
 
-.fa.fa-pull-left {
+.fa.fa-pull-left, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .menu-item a.fa-pull-left.external:after, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .nav-item a.fa-pull-left.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .menu-item a.fa-pull-left.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .nav-item a.fa-pull-left.external:after {
   margin-right: 0.3em;
 }
-.fa.fa-pull-right {
+.fa.fa-pull-right, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .menu-item a.fa-pull-right.external:after, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .nav-item a.fa-pull-right.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .menu-item a.fa-pull-right.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .nav-item a.fa-pull-right.external:after {
   margin-left: 0.3em;
 }
 
@@ -11509,10 +11509,10 @@ figure.woocommerce-product-gallery__wrapper {
   float: left;
 }
 
-.fa.pull-left {
+.fa.pull-left, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .menu-item a.pull-left.external:after, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .nav-item a.pull-left.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .menu-item a.pull-left.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .nav-item a.pull-left.external:after {
   margin-right: 0.3em;
 }
-.fa.pull-right {
+.fa.pull-right, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .menu-item a.pull-right.external:after, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .nav-item a.pull-right.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .menu-item a.pull-right.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .nav-item a.pull-right.external:after {
   margin-left: 0.3em;
 }
 
@@ -14615,6 +14615,15 @@ blockquote cite, .wp-block-quote cite {
 }
 #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .menu-item a.nav-link, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .nav-item a.nav-link, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .menu-item a.nav-link, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .nav-item a.nav-link {
   color: #ce2d19;
+}
+#wrapper-navbar #main-nav #navbarNavDropdown #main-menu .menu-item a.external, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .nav-item a.external, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .menu-item a.external, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .nav-item a.external {
+  border-bottom: 0;
+  white-space: nowrap;
+}
+#wrapper-navbar #main-nav #navbarNavDropdown #main-menu .menu-item a.external:after, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .nav-item a.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .menu-item a.external:after, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .nav-item a.external:after {
+  content: "\f14c";
+  display: inline-block;
+  margin-left: 0.255em;
 }
 #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .menu-item .dropdown-menu.show, #wrapper-navbar #main-nav #navbarNavDropdown #main-menu .nav-item .dropdown-menu.show, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .menu-item .dropdown-menu.show, #wrapper-navbar #main-nav #navbarNavDropdown .navbar-nav .nav-item .dropdown-menu.show {
   color: #ce2d19;
