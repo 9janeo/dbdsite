@@ -111,7 +111,7 @@ class Vortex_Settings
 			array('Vortex_Settings', 'vortex_callback_field_sensitive'),
 			'vortex_admin_menu',
 			'vortex_section_channels',
-			['id' => 'custom_api_key', 'label' => esc_html__('Custom API Key', 'cc-vorrtex')]
+			['id' => 'custom_api_key', 'label' => esc_html__('Custom API Key', 'cc-vortex')]
 		);
 	}
 

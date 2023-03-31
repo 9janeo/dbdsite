@@ -158,14 +158,14 @@ class Vortex
 	public static function plugin_activation()
 	{
 		if (version_compare($GLOBALS['wp_version'], VORTEX__MINIMUM_WP_VERSION, '<')) {
-			load_plugin_textdomain('vortex');
+			load_plugin_textdomain('cc-vortex');
 
 			$message = '<strong>' . sprintf(
-				esc_html__('Vortex %s requires WordPress %s or higher.', 'vortex'),
+				esc_html__('Vortex %s requires WordPress %s or higher.', 'cc-vortex'),
 				VORTEX_VERSION,
 				VORTEX__MINIMUM_WP_VERSION
 			) . '</strong> ' . sprintf(
-				__('Please <a href="%s">upgrade WordPress</a> to a current version to use this plugin.', 'vortex'),
+				__('Please <a href="%s">upgrade WordPress</a> to a current version to use this plugin.', 'cc-vortex'),
 				'https://codex.wordpress.org/Upgrading_WordPress'
 			);
 
