@@ -25,13 +25,13 @@ class Vortex_Settings
 		*/
 		add_settings_section(
 			'vortex_section_admin',
-			'Customize Admin Area',
+			esc_html__('Customize Admin Area', 'cc-vortex'),
 			array('Vortex_Settings', 'vortex_callback_section_admin'),
 			'vortex_admin_menu'
 		);
 		add_settings_section(
 			'vortex_section_channels',
-			'Customize Social Channels Page',
+			esc_html__('Customize Social Channels Page', 'cc-vortex'),
 			array('Vortex_Settings', 'vortex_callback_section_channels'),
 			'vortex_admin_menu'
 		);
@@ -43,88 +43,88 @@ class Vortex_Settings
 		// Admin Section
 		add_settings_field(
 			'custom_footer',
-			'Custom Footer',
+			esc_html__('Custom Footer', 'cc-vortex'),
 			array('Vortex_Settings', 'vortex_callback_field_text'),
 			'vortex_admin_menu',
 			'vortex_section_admin',
-			['id' => 'custom_footer', 'label' => 'Custom footer text']
+			['id' => 'custom_footer', 'label' => esc_html__('Custom footer text', 'cc-vortex')]
 		);
 
 		add_settings_field(
 			'custom_toolbar',
-			'Custom Toolbar',
+			esc_html__('Custom Toolbar', 'cc-vortex'),
 			array('Vortex_Settings', 'vortex_callback_field_checkbox'),
 			'vortex_admin_menu',
 			'vortex_section_admin',
-			['id' => 'custom_toolbar', 'label' => 'Remove new post and comment links from the Toolbar']
+			['id' => 'custom_toolbar', 'label' => esc_html__('Remove new post and comment links from the Toolbar', 'cc-vortex')]
 		);
 
 		add_settings_field(
 			'custom_scheme',
-			'Custom Scheme',
+			esc_html__('Custom Scheme', 'cc-vortex'),
 			array('Vortex_Settings', 'vortex_callback_field_select'),
 			'vortex_admin_menu',
 			'vortex_section_admin',
-			['id' => 'custom_scheme', 'label' => 'Default color scheme for new users']
+			['id' => 'custom_scheme', 'label' => esc_html__('Default color scheme for new users', 'cc-vortex')]
 		);
 
 		// Channels Section
 		add_settings_field(
 			'custom_url',
-			'Custom URL',
+			esc_html__('Custom URL', 'cc-vortex'),
 			array('Vortex_Settings', 'vortex_callback_field_text'),
 			'vortex_admin_menu',
 			'vortex_section_channels',
-			['id' => 'custom_url', 'label' => 'Custom URL for the channels logo link']
+			['id' => 'custom_url', 'label' => esc_html__('Custom URL for the channels logo link', 'cc-vortex')]
 		);
 
 		add_settings_field(
 			'custom_title',
-			'Custom Title',
+			esc_html__('Custom Title', 'cc-vortex'),
 			array('Vortex_Settings', 'vortex_callback_field_text'),
 			'vortex_admin_menu',
 			'vortex_section_channels',
-			['id' => 'custom_title', 'label' => 'Custom title attribute for the logo link']
+			['id' => 'custom_title', 'label' => esc_html__('Custom title attribute for the logo link', 'cc-vortex')]
 		);
 
 		add_settings_field(
 			'custom_style',
-			'Custom Style',
+			esc_html__('Custom Style', 'cc-vortex'),
 			array('Vortex_Settings', 'vortex_callback_field_radio'),
 			'vortex_admin_menu',
 			'vortex_section_channels',
-			['id' => 'custom_style', 'label' => 'Custom CSS for the Login screen']
+			['id' => 'custom_style', 'label' => esc_html__('Custom CSS for the Login screen', 'cc-vortex')]
 		);
 
 		add_settings_field(
 			'custom_message',
-			'Custom Message',
+			esc_html__('Custom Message', 'cc-vortex'),
 			array('Vortex_Settings', 'vortex_callback_field_textarea'),
 			'vortex_admin_menu',
 			'vortex_section_channels',
-			['id' => 'custom_message', 'label' => 'Custom text and/or markup']
+			['id' => 'custom_message', 'label' => esc_html__('Custom text and/or markup', 'cc-vortex')]
 		);
 
 		add_settings_field(
 			'custom_api_key',
-			'Custom API Key',
+			esc_html__('Custom API Key', 'cc-vortex'),
 			array('Vortex_Settings', 'vortex_callback_field_sensitive'),
 			'vortex_admin_menu',
 			'vortex_section_channels',
-			['id' => 'custom_api_key', 'label' => 'Custom API Key']
+			['id' => 'custom_api_key', 'label' => esc_html__('Custom API Key', 'cc-vorrtex')]
 		);
 	}
 
 	// callback: login section
 	public static function vortex_callback_section_admin()
 	{
-		echo '<p>These settings enable you to configure the Vortex settings.</p>';
+		echo '<p>' . esc_html__('These settings enable you to configure the Vortex settings', 'cc-vortex') . '</p>';
 	}
 
 	// callback: admin section
 	public static function vortex_callback_section_channels()
 	{
-		echo '<p>These settings enable you to customize the Vortex Channels.</p>';
+		echo '<p>' . esc_html__('These settings enable you to customize the Vortex Channels', 'cc-vortex') . '</p>';
 	}
 
 	// callback: text field
@@ -141,6 +141,15 @@ class Vortex_Settings
 		echo '<label for="vortex_options_' . $id . '">' . $label . '</label>';
 	}
 
+	// radio field options
+	static function vortex_options_radio()
+	{
+		return array(
+			'enable'  => esc_html__('Enable custom styles', 'cc-vortex'),
+			'disable' => esc_html__('Disable custom styles', 'cc-vortex')
+		);
+	}
+
 	// callback: radio field
 	public static function vortex_callback_field_radio($args)
 	{
@@ -151,12 +160,7 @@ class Vortex_Settings
 
 		$selected_option = isset($options[$id]) ? sanitize_text_field($options[$id]) : '';
 
-		$radio_options = array(
-
-			'enable'  => 'Enable custom styles',
-			'disable' => 'Disable custom styles'
-
-		);
+		$radio_options = self::vortex_options_radio();
 
 		foreach ($radio_options as $value => $label) {
 
@@ -209,14 +213,14 @@ class Vortex_Settings
 
 		$select_options = array(
 
-			'default'   => 'Default',
-			'light'     => 'Light',
-			'blue'      => 'Blue',
-			'coffee'    => 'Coffee',
-			'ectoplasm' => 'Ectoplasm',
-			'midnight'  => 'Midnight',
-			'ocean'     => 'Ocean',
-			'sunrise'   => 'Sunrise',
+			'default'   => esc_html__('Default',	'cc-vortex'),
+			'light'     => esc_html__('Light',		'cc-vortex'),
+			'blue'      => esc_html__('Blue',		'cc-vortex'),
+			'coffee'    => esc_html__('Coffee',		'cc-vortex'),
+			'ectoplasm' => esc_html__('Ectoplasm',	'cc-vortex'),
+			'midnight'  => esc_html__('Midnight',	'cc-vortex'),
+			'ocean'     => esc_html__('Ocean',		'cc-vortex'),
+			'sunrise'   => esc_html__('Sunrise',	'cc-vortex'),
 
 		);
 
