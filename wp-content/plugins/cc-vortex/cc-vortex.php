@@ -69,7 +69,7 @@ function vortex_options_default()
 		'custom_url'     => 'https://disbydem.com/',
 		'custom_title'   => esc_html__('What\'s your DBD\'ers scale?', 'cc-vortex'),
 		'custom_style'   => 'disable',
-		'custom_message' => '<p class="custom-message">' . esc_html__('My custom message', 'cc-votex') . '</p>',
+		'custom_message' => '<p class="custom-message">' . esc_html__('My custom message', 'cc-vortex') . '</p>',
 		'custom_footer'  => esc_html__('Special message for users', 'cc-vortex'),
 		'custom_toolbar' => false,
 		'custom_scheme'  => 'default',
