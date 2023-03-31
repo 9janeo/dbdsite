@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "vortex/fancy-header",
+  "title": "Fancy Header",
+  "category": "text",
+  "icon": "star-filled",
+  "description": "Adds a header wih ha hover effect",
+  "keywords": [
+    "vortex",
+    "header",
+    "hover",
+    "underline"
+  ],
+  "version": "1",
+  "textdomain": "cc-vortex",
+  "editorScript": "file:./index.js",
+  "attributes": {
+    "content": {
+      "type": "string",
+      "source": "html",
+      "selector": "h2"
+    },
+    "underline_color": {
+      "type": "string",
+      "default": "#f87171"
+    }
+  },
+  "style": "file:./index.css"
+}
