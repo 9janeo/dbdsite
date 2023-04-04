@@ -57,6 +57,7 @@ function load_custom_wp_admin_style()
   $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
   $custom_admin_styles = "/css/custom-admin-style{$suffix}.css";
   wp_enqueue_style('custom-admin-style', get_stylesheet_directory_uri() . $custom_admin_styles, array(), wp_get_theme()->get('Version'));
+  wp_register_script('custom-admin-script', get_stylesheet_directory_uri() . "/js/custom-admin-script.js", array(), wp_get_theme()->get('Version'), true);
 }
 add_action('admin_enqueue_scripts', 'load_custom_wp_admin_style');
 
