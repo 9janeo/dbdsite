@@ -23,10 +23,16 @@ $videos = $args['videos'];
 // https://www.youtube.com/embed/?listType=playlist&list=PLMlNiWEoh5QrLU6C7_Ad71UtRpACh3FdQ
 ?>
 <div class="card">
-  <div class="card-title">
-    <a href="https://www.youtube.com/playlist?list=<?php echo $id ?>" target="_blank"><img class="card-img-top" src="<?php echo $thumbnails->medium->url ?>" /></a>
-    <h3><?= $title ?></h3>
-    <p class="small card-text pull-left"><?php echo $itemCount; ?> Videos</p>
+  <div class="card-header">
+    <h5 class="card-title"><?= $title ?></h5>
+    <p class="card-text"><?php echo $itemCount; ?> Videos</p>
   </div>
-  <?php get_template_part('lib/youtube-templates/video_list', 'video_list', $videos); ?>
+  <img class="card-img" src="<?php echo $thumbnails->medium->url ?>" />
+  <div class="card-footer">
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#list_<?= $id ?>" aria-expanded="false" aria-controls="multiCollapseVideoList">Toggle videos
+    </button>
+    <div id="list_<?php echo $id ?>" class="collapse">
+      <?php get_template_part('lib/youtube-templates/video_list', 'video_list', $videos); ?>
+    </div>
+  </div>
 </div>
