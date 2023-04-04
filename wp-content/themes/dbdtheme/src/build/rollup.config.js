@@ -9,6 +9,7 @@ const replace = require('@rollup/plugin-replace')
 const banner = require('./banner.js')
 
 let fileDest = 'child-theme.js'
+let adminFileDest = 'custom-admin-script.js'
 const external = ['jquery']
 const plugins = [
   babel({
@@ -30,7 +31,7 @@ const globals = {
 }
 
 
-module.exports = {
+module.exports = [{
   input: [path.resolve(__dirname, '../js/bootstrap.js'), path.resolve(__dirname, '../js/skip-link-focus-fix.js'), path.resolve(__dirname, '../js/custom-javascript.js')],
   output: {
     banner,
@@ -41,4 +42,17 @@ module.exports = {
   },
   external,
   plugins
+},
+{
+  input: [path.resolve(__dirname, '../js/bootstrap.js'), path.resolve(__dirname, '../js/custom-javascript.js')],
+  output: {
+    banner,
+    file: path.resolve(__dirname, `../../js/${adminFileDest}`),
+    format: 'umd',
+    globals,
+    name: 'understrap'
+  },
+  external,
+  plugins
 }
+]
