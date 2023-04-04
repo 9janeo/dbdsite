@@ -23,6 +23,7 @@ function display_video_analytics()
 
   if ($_GET["page"] === 'video-analytics') {
     include_once('yt-service.php');
+    wp_enqueue_script('custom-admin-script');
   }
 
   get_template_part('lib/youtube-templates/settings', 'settings');
@@ -44,7 +45,7 @@ function display_video_analytics()
   if ($playlists) {
     if (!($playlists->error)) {
 ?>
-      <div class="yt playlists">
+      <div class="yt playlists row row-cols-2">
         <?php
         foreach ($playlists->items as $playlist) {
           $id = $playlist->id;

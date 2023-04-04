@@ -2,22 +2,20 @@
 // video list template
 
 $video_list = $args;
-
+$list_tag = $video_list->etag;
 ?>
-<table class="wp-list-table widefat fixed striped">
+<table class="table">
   <thead>
     <tr>
-      <th scope="col">Video Title</th>
+      <th scope="col">Title</th>
       <th scope="col">Views</th>
       <th scope="col">Analytics</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody class="<?php echo $list_tag ?>">
     <?php
-    // print_r("video_list: \n");
-    // var_dump($video_list)
-    ?>
-    <?php if (!(property_exists($video_list, 'error'))) :
+    // print_r(json_encode($video_list));
+    if (!(property_exists($video_list, 'error'))) :
       foreach ($video_list as $video) : ?>
         <tr>
           <td><?php echo $video->snippet->title; ?></td>
