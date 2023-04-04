@@ -13,3 +13,6 @@ dist-product
 npm-debug.log
 
 /vendor/
+
+/lib/client_secret.json
+/lib/service-account.json
