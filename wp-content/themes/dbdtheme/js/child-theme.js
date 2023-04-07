@@ -7773,6 +7773,15 @@
 	  }
 	})();
 
+	// Add your custom JS here.
+
+	(function ($) {
+
+	  jQuery(function ($) {
+	    $('[data-bs-toggle="popover"]').popover();
+	  });
+	})(jQuery);
+
 	exports.Alert = alert;
 	exports.Button = button;
 	exports.Carousel = carousel_1;

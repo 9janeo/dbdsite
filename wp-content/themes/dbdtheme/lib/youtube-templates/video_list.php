@@ -14,9 +14,12 @@ $list_tag = $video_list->etag;
   </thead>
   <tbody class="<?php echo $list_tag ?>">
     <?php
-    // print_r(json_encode($video_list));
     if (!(property_exists($video_list, 'error'))) :
-      foreach ($video_list as $video) : ?>
+      foreach ($video_list as $video) :
+        if (($video->status->privacyStatus == 'private')) {
+          continue;
+        }
+    ?>
         <tr>
           <td><?php echo $video->snippet->title; ?></td>
           <td><?php echo $video->snippet->views; ?></td>

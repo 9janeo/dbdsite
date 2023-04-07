@@ -30,7 +30,7 @@ if (isset($videos[0])) {
     <img class="card-img" src="<?= $thumbnails->medium->url ?>" />
   <?php endif; ?>
   <div class="card-footer">
-    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#list_<?= $id ?>" aria-expanded="false" aria-controls="multiCollapseVideoList">Toggle videos
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-target="#list_<?php echo $id; ?>" data-bs-target="#list_<?php echo $id; ?>" aria-expanded="false" aria-controls="collapseVideoList">Show videos
     </button>
     <div id="list_<?php echo $id ?>" class="collapse">
       <?php get_template_part('lib/youtube-templates/video_list', 'video_list', $videos); ?>
