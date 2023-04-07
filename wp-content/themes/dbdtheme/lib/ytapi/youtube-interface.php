@@ -21,7 +21,8 @@ function display_video_analytics()
     wp_die('You do not have sufficient permissions to access this page.');
   }
 
-  if ($_GET["page"] === 'video-analytics') {
+  if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
+    print_r("Including YT Service");
     include_once('yt-service.php');
     wp_enqueue_script('custom-admin-script');
   }
@@ -47,8 +48,14 @@ function display_video_analytics()
 ?>
       <div class="yt playlists row row-cols-2">
         <?php
-        foreach ($playlists->items as $playlist) {
+        foreach ($playlists->items as $key => $playlist) {
           $id = $playlist->id;
+          // if (($playlist->status->privacyStatus == 'private') || ($playlist->contentDetails->itemCount = 0)) {
+          // print_r("<br><h3>This playlist (" . $id . ") has" . $playlist->contentDetails->itemCount . " videos!!!</h3><br>");
+          if (!($playlist->contentDetails->itemCount > 0)) {
+            print_r("<br><h3>This playlist has no videos!!!</h3><br>");
+            // continue;
+          }
           $videos = get_playlists_items($service, $id);
           // get the playlist items
           get_template_part('lib/youtube-templates/playlists', 'playlists', array('playlist' => $playlist, 'videos' => $videos));
@@ -106,6 +113,12 @@ function load_videos($channel_id, $client, $service)
   return $response;
 }
 
+
+/**
+ * Returns the playlists for a channel
+ * @param  mixed  $service      [Youtube service]
+ * @return mixed  $args         [The query params for the call]
+ */
 function get_playlists($service)
 {
   // check transient
@@ -114,18 +127,23 @@ function get_playlists($service)
       'channelId' => 'UCglE7vDtPHuulBhLvn9Q-eg',
       'maxResults' => 25
     ];
-    $channel_playlists = $service->playlists->listPlaylists('snippet,contentDetails', $queryParams);
+    $channel_playlists = $service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
     set_transient('channel_playlists', $channel_playlists, DAY_IN_SECONDS);
   }
   return $channel_playlists;
 }
 
+/**
+ * Returns the videos for a playlist
+ * @param  mixed  $service      [Youtube service]
+ * @return mixed  $playlist_id  [The id of the playlist we want]
+ */
 function get_playlists_items($service, $playlist_id)
 {
   $queryParams = [
     'maxResults' => 25,
     'playlistId' => $playlist_id
   ];
-  $response = $service->playlistItems->listPlaylistItems('snippet,contentDetails', $queryParams);
+  $response = $service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
   return $response;
 }
