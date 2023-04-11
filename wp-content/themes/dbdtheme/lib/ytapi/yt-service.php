@@ -6,10 +6,10 @@
  * https://developers.google.com/explorer-help/code-samples#php
  */
 
-if (!file_exists(__DIR__ . '../../../vendor/autoload.php')) {
-  throw new Exception(sprintf('Please run "composer require google/apiclient:~2.0" in "%s"', __DIR__));
+if (!file_exists(get_stylesheet_directory().'/vendor/autoload.php')) {
+  throw new Exception(sprintf('Please run "composer require google/apiclient:~2.0" in "%s"', (get_stylesheet_directory().'/vendor/autoload.php')));
 }
-require_once __DIR__ . '../../../vendor/autoload.php';
+require_once(get_stylesheet_directory().'/vendor/autoload.php');
 
 // define('STDIN', fopen('php://stdin', 'r'));
 
