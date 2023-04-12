@@ -4,11 +4,8 @@ defined('ABSPATH') || exit;
 
 // Register the options page for viewing video analytics
 // begin wrapping in classes
-require_once('class.dbd-youtube.php');
-require_once('class.dbd-menu.php');
-
-// add_action('admin_init', array('Dbd_Youtube', 'admin_init'));
-add_action('admin_menu', array('Dbd_Menu', 'admin_menu')); # Priority 5, so it's called before Jetpack's admin_menu.
+require_once('class.dbd-admin.php');
+add_action('admin_menu', array('Dbd_Admin', 'init'), 0); # Start initializationn of custom YT classes
 
 add_action('admin_menu', 'register_video_analytics_page');
 function register_video_analytics_page()
