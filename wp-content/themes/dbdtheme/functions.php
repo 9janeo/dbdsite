@@ -10,6 +10,7 @@
 defined('ABSPATH') || exit;
 
 require_once('lib/custom_taxonomies.php');
+require_once('lib/youtube-post-type.php');
 require_once('lib/ytapi/youtube-interface.php');
 require_once('inc/api.php');
 
