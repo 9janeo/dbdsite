@@ -1,6 +1,14 @@
 <?php
+// Exit if accessed directly.
+defined('ABSPATH') || exit;
 
 // Register the options page for viewing video analytics
+// begin wrapping in classes
+require_once('class.dbd-youtube.php');
+require_once('class.dbd-menu.php');
+
+// add_action('admin_init', array('Dbd_Youtube', 'admin_init'));
+add_action('admin_menu', array('Dbd_Menu', 'admin_menu')); # Priority 5, so it's called before Jetpack's admin_menu.
 
 add_action('admin_menu', 'register_video_analytics_page');
 function register_video_analytics_page()
@@ -29,8 +37,12 @@ function display_video_analytics()
   get_template_part('lib/youtube-templates/settings', 'settings');
   get_template_part('lib/youtube-templates/videos', 'videos');
 
-  $playlists = get_playlists($service);
-  if ($playlists) {
+
+
+  // Dbd_Menu::load_menu();
+
+  // $playlists = get_playlists($service);
+  if (isset($playlists) && $playlists) {
     if (!($playlists->error)) {
 ?>
       <div class="yt playlists row row-cols-2">
