@@ -22,25 +22,12 @@ function display_video_analytics()
   }
 
   if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
-    print_r("Including YT Service");
     include_once('yt-service.php');
     wp_enqueue_script('custom-admin-script');
   }
 
   get_template_part('lib/youtube-templates/settings', 'settings');
   get_template_part('lib/youtube-templates/videos', 'videos');
-
-  // $channel_details = load_channel_details($channel_id, $client, $service);
-  // if ($channel_details) {
-  //   var_dump($channel_details->items);
-  // }
-
-  // $vids = load_videos($channel_id, $client, $service);
-  // if ($vids) {
-  //   print_r("<br>================================<br>");
-  //   $results = wp_remote_retrieve_body($vids);
-  //   var_dump($results);
-  // }
 
   $playlists = get_playlists($service);
   if ($playlists) {
@@ -50,11 +37,10 @@ function display_video_analytics()
         <?php
         foreach ($playlists->items as $key => $playlist) {
           $id = $playlist->id;
-          // if (($playlist->status->privacyStatus == 'private') || ($playlist->contentDetails->itemCount = 0)) {
-          // print_r("<br><h3>This playlist (" . $id . ") has" . $playlist->contentDetails->itemCount . " videos!!!</h3><br>");
           if (!($playlist->contentDetails->itemCount > 0)) {
-            print_r("<br><h3>This playlist has no videos!!!</h3><br>");
-            // continue;
+            // skip playlist if no items in it
+            // print_r("<br><h3>This playlist has no videos!!!</h3><br>");
+            continue;
           }
           $videos = get_playlists_items($service, $id);
           // get the playlist items
@@ -121,7 +107,6 @@ function load_videos($channel_id, $client, $service)
  */
 function get_playlists($service)
 {
-  // check transient
   if (false === ($channel_playlists = get_transient('channel_playlists'))) {
     $queryParams = [
       'channelId' => 'UCglE7vDtPHuulBhLvn9Q-eg',
@@ -144,6 +129,48 @@ function get_playlists_items($service, $playlist_id)
     'maxResults' => 25,
     'playlistId' => $playlist_id
   ];
-  $response = $service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
+  if (false === ($playlist_items = get_transient('playlist_items'))) {
+    $playlist_items = $service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
+    write_log('Setting Playlist Items transient for playlist - ' . $playlist_id);
+    set_transient('playlist_items', $playlist_items, DAY_IN_SECONDS);
+  } else {
+    write_log('Retrieving Playlist Items transient for playlist - ' . $playlist_id);
+  }
+  return $playlist_items;
+}
+
+
+/**
+ * Returns the videos for a playlist
+ * @param  mixed  $service      [Youtube service]
+ * @return mixed  $playlist_id  [The id of the playlist we want]
+ */
+function get_all_videos($service)
+{
+  $queryParams = [
+    'chart' => 'mostPopular',
+    'regionCode' => 'CA',
+    'maxResults' => 3
+    // 'id' => 'UCglE7vDtPHuulBhLvn9Q-eg'
+  ];
+  $response = $service->videos->listVideos('snippet,contentDetails,statistics', $queryParams);
   return $response;
+}
+
+
+/**
+ * Returns a url based on the source type provided
+ * @return string  $resource_id  [The id of the resource]
+ * @return string  $source_type  [The type of resource link to be generated]
+ */
+function build_link($id, $type = '')
+{
+  $base = 'https://www.youtube.com/watch?v=';
+  $tail = "&ab_channel=DISBYDEM";
+  if ($type == 'video') {
+    $link = $base . $id . $tail;
+  } else {
+    $link = $base . $id;
+  }
+  return $link;
 }
