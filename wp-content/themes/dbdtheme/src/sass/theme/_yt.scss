@@ -1,2 +1,20 @@
 div.yt {
+  .card {
+    .card-footer{
+      padding: 0;
+      .playlist {
+        .list-group-item {
+          .video-title {
+            margin: none;
+            &:not(.active){
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 1;
+              overflow: hidden;
+            }
+          }              
+        }
+      }
+    }
+  }
 }
