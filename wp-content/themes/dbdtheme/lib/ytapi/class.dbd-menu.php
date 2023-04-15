@@ -37,8 +37,20 @@ class Dbd_Menu
       array('Dbd_Admin', 'display_configuration_page'),
     );
 
+    $hook2 = add_submenu_page(
+      'dbd_admin_menu',
+      __('Video Analytics', 'disbydem'),
+      __('Video Analytics', 'disbydem'),
+      'manage_options',
+      'video-analytics',
+      array('Dbd_Admin', 'display_analytics'),
+    );
+
     if ($hook) {
       add_action("load-$hook", array('Dbd_Menu', 'admin_help'));
+    }
+    if ($hook2) {
+      add_action("load-$hook2", array('Dbd_Menu', 'admin_help'));
     }
   }
 

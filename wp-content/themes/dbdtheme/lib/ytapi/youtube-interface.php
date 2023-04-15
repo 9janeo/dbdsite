@@ -5,38 +5,13 @@ defined('ABSPATH') || exit;
 // Register the options page for viewing video analytics
 // begin wrapping in classes
 require_once('class.dbd-admin.php');
-add_action('admin_menu', array('Dbd_Admin', 'init'), 0); # Start initializationn of custom YT classes
+add_action('init', array('Dbd_Admin', 'init'), 0); # Start initializationn of custom YT classes
 
-add_action('admin_menu', 'register_video_analytics_page');
-function register_video_analytics_page()
-{
-  add_options_page(
-    'Video Analytics',
-    'Video Analytics',
-    'manage_options',
-    'video-analytics',
-    'display_video_analytics'
-  );
-}
+
 
 // Display the video analytics page
-function display_video_analytics()
+/* function display_video_analytics()
 {
-  if (!current_user_can('manage_options')) {
-    wp_die('You do not have sufficient permissions to access this page.');
-  }
-
-  if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
-    include_once('yt-service.php');
-    wp_enqueue_script('custom-admin-script');
-  }
-
-  get_template_part('lib/youtube-templates/settings', 'settings');
-  get_template_part('lib/youtube-templates/videos', 'videos');
-
-
-
-  // Dbd_Menu::load_menu();
 
   // $playlists = get_playlists($service);
   if (isset($playlists) && $playlists) {
@@ -51,7 +26,7 @@ function display_video_analytics()
             // print_r("<br><h3>This playlist has no videos!!!</h3><br>");
             continue;
           }
-          $videos = get_playlists_items($service, $id);
+          $videos = Dbd_Youtube::get_playlist_items($id);
           // get the playlist items
           get_template_part('lib/youtube-templates/playlists', 'playlists', array('playlist' => $playlist, 'videos' => $videos));
         }
@@ -60,7 +35,7 @@ function display_video_analytics()
 <?php
     }
   }
-}
+} */
 
 // Retrieve the list of videos from the YouTube API
 function get_videos_from_youtube_api($key)
@@ -108,63 +83,6 @@ function load_videos($channel_id, $client, $service)
   return $response;
 }
 
-
-/**
- * Returns the playlists for a channel
- * @param  mixed  $service      [Youtube service]
- * @return mixed  $args         [The query params for the call]
- */
-function get_playlists($service)
-{
-  if (false === ($channel_playlists = get_transient('channel_playlists'))) {
-    $queryParams = [
-      'channelId' => 'UCglE7vDtPHuulBhLvn9Q-eg',
-      'maxResults' => 25
-    ];
-    $channel_playlists = $service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
-    set_transient('channel_playlists', $channel_playlists, DAY_IN_SECONDS);
-  }
-  return $channel_playlists;
-}
-
-/**
- * Returns the videos for a playlist
- * @param  mixed  $service      [Youtube service]
- * @return mixed  $playlist_id  [The id of the playlist we want]
- */
-function get_playlists_items($service, $playlist_id)
-{
-  $queryParams = [
-    'maxResults' => 25,
-    'playlistId' => $playlist_id
-  ];
-  if (false === ($playlist_items = get_transient('playlist_items'))) {
-    $playlist_items = $service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
-    write_log('Setting Playlist Items transient for playlist - ' . $playlist_id);
-    set_transient('playlist_items', $playlist_items, DAY_IN_SECONDS);
-  } else {
-    write_log('Retrieving Playlist Items transient for playlist - ' . $playlist_id);
-  }
-  return $playlist_items;
-}
-
-
-/**
- * Returns the videos for a playlist
- * @param  mixed  $service      [Youtube service]
- * @return mixed  $playlist_id  [The id of the playlist we want]
- */
-function get_all_videos($service)
-{
-  $queryParams = [
-    'chart' => 'mostPopular',
-    'regionCode' => 'CA',
-    'maxResults' => 3
-    // 'id' => 'UCglE7vDtPHuulBhLvn9Q-eg'
-  ];
-  $response = $service->videos->listVideos('snippet,contentDetails,statistics', $queryParams);
-  return $response;
-}
 
 
 /**
