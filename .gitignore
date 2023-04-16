@@ -3,6 +3,7 @@ wp-config.php
 
 wp-content/.DS_Store
 wp-content/upgrade/*
+wp-content/uploads/*
 wp-content/backup-db/*
 wp-content/cache/*
 wp-content/cache/supercache/*
