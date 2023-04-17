@@ -136,7 +136,7 @@ class Dbd_Youtube
         'channelId' => 'UCglE7vDtPHuulBhLvn9Q-eg',
         'maxResults' => 25
       ];
-      $channel_playlists = self::$service->playlists->listPlaylists('snippet,contentDetails,status,statistics', $queryParams);
+      $channel_playlists = self::$service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
       set_transient('channel_playlists', $channel_playlists, DAY_IN_SECONDS);
       foreach ($channel_playlists->items as $index => $playlist) {
         $id = $playlist->id;
