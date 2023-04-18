@@ -7,7 +7,21 @@ defined('ABSPATH') || exit;
 require_once('class.dbd-admin.php');
 add_action('init', array('Dbd_Admin', 'init'), 0); # Start initializationn of custom YT classes
 
+// default plugin options. these are used until the user makes edits
+function dbd_options_default()
+{
 
+  return array(
+    'custom_url'     => 'https://disbydem.com/',
+    'custom_title'   => esc_html__('What\'s your DBD\'ers scale?', 'cc-vortex'),
+    'custom_style'   => 'disable',
+    'custom_message' => '<p class="custom-message">' . esc_html__('My custom message', 'cc-vortex') . '</p>',
+    'custom_footer'  => esc_html__('Special message for users', 'cc-vortex'),
+    'custom_toolbar' => false,
+    'custom_scheme'  => 'default',
+    'custom_api_key'  => 'default',
+  );
+}
 
 // Display the video analytics page
 /* function display_video_analytics()

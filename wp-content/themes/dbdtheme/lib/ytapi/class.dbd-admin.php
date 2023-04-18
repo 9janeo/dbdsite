@@ -21,6 +21,7 @@ class Dbd_Admin
     // require_once('yt-service.php');
     require_once('class.dbd-youtube.php');
     require_once('class.dbd-menu.php');
+    require_once('class.dbd-settings.php');
 
     if (!self::$initiated) {
       self::init_hooks();
@@ -36,6 +37,7 @@ class Dbd_Admin
 
     Dbd_Youtube::init();
     add_action('admin_menu', array('Dbd_Menu', 'admin_menu'));
+    add_action('admin_init', array('DBD_settings', 'dbd_register_settings'));
 
     // load client
     // set up client scopes
@@ -70,6 +72,8 @@ class Dbd_Admin
     // ToDo: rewrite url for vortex admin settings page
     if (!Dbd_Admin::API_KEY || (isset($_GET['view']) && $_GET['view'] == 'dbd_admin_menu')) :
       self::display_start_page();
+    elseif ((isset($_GET['view']) && $_GET['view'] == 'dbd_channels')) :
+      self::display_channel_settings();
     else :
       self::display_configuration_page();
     endif;
@@ -80,7 +84,7 @@ class Dbd_Admin
     $api_key      = Dbd_Admin::API_KEY;
     $akismet_user = 'Beta User';
     echo '<h3>DisByDem Admin: Display configuration page</h3>';
-    Dbd_Admin::view('settings', compact('api_key', 'beta_user'));
+    Dbd_Admin::view('settings', compact('api_key', 'akismet_user'));
   }
 
   public static function display_analytics()
@@ -89,6 +93,14 @@ class Dbd_Admin
     $dbd_user = 'Beta User';
     echo '<h3>DisByDem: YouTube analytics</h3>';
     Dbd_Admin::view('analytics', compact('api_key', 'dbd_user'));
+  }
+
+  public static function display_channel_settings()
+  {
+    $dbd_user = 'Beta User';
+    $channel_settings = get_option('channel_settings');
+    var_dump($channel_settings);
+    Dbd_Admin::view('channels', compact('dbd_user', 'channel_settings'));
   }
 
   public static function view($name, array $args = array())
