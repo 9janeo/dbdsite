@@ -54,9 +54,8 @@ function dbd_callback_validate_options($input)
 
   $input['custom_toolbar'] = ($input['custom_toolbar'] == 1 ? 1 : 0);
 
-  // custom scheme
-  $select_options = array(
-
+  // custom style scheme
+  $style_options = array(
     'default'   => 'Default',
     'light'     => 'Light',
     'blue'      => 'Blue',
@@ -65,7 +64,13 @@ function dbd_callback_validate_options($input)
     'midnight'  => 'Midnight',
     'ocean'     => 'Ocean',
     'sunrise'   => 'Sunrise',
+  );
 
+  $platfom_options = array(
+    'default'   => esc_html__('YouTube',  'disbydem'),
+    'tiktok'      => esc_html__('TikTok',    'disbydem'),
+    'instagram'    => esc_html__('Instagram',    'disbydem'),
+    'facebook' => esc_html__('Facebook',  'disbydem'),
   );
 
   if (!isset($input['custom_scheme'])) {
@@ -73,9 +78,19 @@ function dbd_callback_validate_options($input)
     $input['custom_scheme'] = null;
   }
 
-  if (!array_key_exists($input['custom_scheme'], $select_options)) {
+  if (!array_key_exists($input['custom_scheme'], $style_options)) {
 
     $input['custom_scheme'] = null;
+  }
+
+  // channel platform
+  if(!array_key_exists($input['channel_platform'], $platfom_options)) {
+    $input['channel_platform'] = null;
+  }
+
+  // channel name
+  if (isset($input['channel_name'])) {
+    $input['channel_name'] = wp_kses_post($input['channel_name']);
   }
 
   return $input;

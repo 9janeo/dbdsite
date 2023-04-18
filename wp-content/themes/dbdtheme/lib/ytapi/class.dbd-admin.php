@@ -99,6 +99,7 @@ class Dbd_Admin
   {
     $dbd_user = 'Beta User';
     $channel_settings = get_option('channel_settings');
+    echo '<h3>DisByDem Channels: Display channel settings page</h3>';
     var_dump($channel_settings);
     Dbd_Admin::view('channels', compact('dbd_user', 'channel_settings'));
   }
