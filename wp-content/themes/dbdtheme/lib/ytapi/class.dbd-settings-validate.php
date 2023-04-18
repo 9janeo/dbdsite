@@ -83,15 +83,16 @@ function dbd_callback_validate_options($input)
     $input['custom_scheme'] = null;
   }
 
-  // channel platform
-  if(!array_key_exists($input['channel_platform'], $platfom_options)) {
-    $input['channel_platform'] = null;
-  }
-
   // channel name
   if (isset($input['channel_name'])) {
     $input['channel_name'] = wp_kses_post($input['channel_name']);
   }
+
+  // channel platform
+  if (!array_key_exists($input['channel_platform'], $platfom_options)) {
+    $input['channel_platform'] = null;
+  }
+
 
   return $input;
 }
