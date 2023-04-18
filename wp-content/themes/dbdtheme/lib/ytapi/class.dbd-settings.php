@@ -33,7 +33,7 @@ class DBD_Settings
       'dbd_section_channels',
       esc_html__('Customize Social Channels Page', 'disbydem'),
       array('DBD_Settings', 'dbd_callback_channel_settings'),
-      'dbd_admin_menu'
+      'dbd_channels'
     );
 
     /*
@@ -115,12 +115,21 @@ class DBD_Settings
     );
 
     add_settings_field(
-      'dbd_channels',
-      esc_html__('Add a channel', 'disbydem'),
-      array('DBD_Settings', 'dbd_callback_channel_settings'),
+      'channel_name',
+      esc_html__('Channel Name', 'disbydem'),
+      array('DBD_Settings', 'dbd_channels_callback_field_text'),
       'dbd_channels',
       'dbd_section_channels',
-      ['id' => 'custom_user_channels', 'label' => esc_html__('Custom user channels', 'disbydem')]
+      ['id' => 'channel_name', 'label' => esc_html__('Channel Name', 'disbydem')]
+    );
+    
+    add_settings_field(
+      'channel_platform',
+      esc_html__('Channel platform', 'disbydem'),
+      array('DBD_Settings', 'dbd_callback_platform_select'),
+      'dbd_channels',
+      'dbd_section_channels',
+      ['id' => 'channel_platform', 'label' => esc_html__('Channel platform', 'disbydem')]
     );
   }
 
@@ -134,6 +143,20 @@ class DBD_Settings
   public static function dbd_callback_section_admin()
   {
     echo '<p>' . esc_html__('These settings enable you to configure the DBD settings', 'disbydem') . '</p>';
+  }
+
+  // callback: text field
+  public static function dbd_channels_callback_field_text($args)
+  {
+    $options = get_option('channel_settings', dbd_channels_default());
+
+    $id    = isset($args['id'])    ? $args['id']    : '';
+    $label = isset($args['label']) ? $args['label'] : '';
+
+    $value = isset($options[$id]) ? sanitize_text_field($options[$id]) : '';
+
+    echo '<input id="channel_settings_' . $id . '" name="channel_settings_[' . $id . ']" type="text" size="40" value="' . $value . '"><br />';
+    echo '<label for="channel_settings_' . $id . '">' . $label . '</label>';
   }
 
   // callback: text field
@@ -210,6 +233,33 @@ class DBD_Settings
     echo '<label for="dbd_options_' . $id . '">' . $label . '</label>';
   }
 
+  // callbac for select options
+  public static function dbd_callback_select_options($options){
+    $style_options = array(
+      'default'   => esc_html__('Default',  'disbydem'),
+      'light'     => esc_html__('Light',    'disbydem'),
+      'blue'      => esc_html__('Blue',    'disbydem'),
+      'coffee'    => esc_html__('Coffee',    'disbydem'),
+      'ectoplasm' => esc_html__('Ectoplasm',  'disbydem'),
+      'midnight'  => esc_html__('Midnight',  'disbydem'),
+      'ocean'     => esc_html__('Ocean',    'disbydem'),
+      'sunrise'   => esc_html__('Sunrise',  'disbydem'),
+    );
+
+    $platfom_options = array(
+      'default'   => esc_html__('YouTube',  'disbydem'),
+      'tiktok'      => esc_html__('TikTok',    'disbydem'),
+      'instagram'    => esc_html__('Instagram',    'disbydem'),
+      'facebook' => esc_html__('Facebook',  'disbydem'),
+    );
+
+    if($options == 'custom_styles') {
+      return $style_options;
+    } else {
+      return $platfom_options;
+    }
+  }
+
   // callback: select field
   public static function dbd_callback_field_select($args)
   {
@@ -220,18 +270,7 @@ class DBD_Settings
 
     $selected_option = isset($options[$id]) ? sanitize_text_field($options[$id]) : '';
 
-    $select_options = array(
-
-      'default'   => esc_html__('Default',  'disbydem'),
-      'light'     => esc_html__('Light',    'disbydem'),
-      'blue'      => esc_html__('Blue',    'disbydem'),
-      'coffee'    => esc_html__('Coffee',    'disbydem'),
-      'ectoplasm' => esc_html__('Ectoplasm',  'disbydem'),
-      'midnight'  => esc_html__('Midnight',  'disbydem'),
-      'ocean'     => esc_html__('Ocean',    'disbydem'),
-      'sunrise'   => esc_html__('Sunrise',  'disbydem'),
-
-    );
+    $select_options = self::dbd_callback_select_options('custom_styles');
 
     echo '<select id="dbd_options_' . $id . '" name="dbd_options[' . $id . ']">';
 
@@ -243,6 +282,30 @@ class DBD_Settings
     }
 
     echo '</select> <label for="dbd_options_' . $id . '">' . $label . '</label>';
+  }
+  
+  // callback: select channel platform field
+  public static function dbd_callback_platform_select($args)
+  {
+    $options = get_option('channel_settings_', dbd_channels_default());
+
+    $id    = isset($args['id'])    ? $args['id']    : '';
+    $label = isset($args['label']) ? $args['label'] : '';
+
+    $selected_option = isset($options[$id]) ? sanitize_text_field($options[$id]) : '';
+
+    $select_options = self::dbd_callback_select_options('platform');
+
+    echo '<select id="channel_settings_' . $id . '" name="channel_settings[' . $id . ']">';
+
+    foreach ($select_options as $value => $option) {
+
+      $selected = selected($selected_option === $value, true, false);
+
+      echo '<option value="' . $value . '"' . $selected . '>' . $option . '</option>';
+    }
+
+    echo '</select> <label for="channel_settings_' . $id . '">' . $label . '</label>';
   }
 
   // callback: sensitive field
