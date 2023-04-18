@@ -34,7 +34,7 @@ class Dbd_Menu
       __('Dbd Socials', 'disbydem'),
       'manage_options',
       'dbd_channels',
-      array('Dbd_Admin', 'display_configuration_page'),
+      array('Dbd_Admin', 'display_channel_settings'),
     );
 
     $hook2 = add_submenu_page(
