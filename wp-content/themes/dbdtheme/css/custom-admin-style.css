@@ -10377,4 +10377,17 @@ a.skip-link {
   display: block;
 }
 
+div.yt .card .card-footer {
+  padding: 0;
+}
+div.yt .card .card-footer .playlist .list-group-item .video-title {
+  margin: none;
+}
+div.yt .card .card-footer .playlist .list-group-item .video-title:not(.active) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
 /*# sourceMappingURL=custom-admin-style.css.map */
