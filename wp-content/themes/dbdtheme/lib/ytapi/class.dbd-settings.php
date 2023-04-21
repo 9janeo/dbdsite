@@ -7,13 +7,6 @@ class DBD_Settings
 {
   public static function dbd_register_settings()
   {
-
-    register_setting(
-      'channel_settings',
-      'channel_settings',
-      'dbd_callback_validate_options'
-    );
-
     register_setting(
       'dbd_options',
       'dbd_options',
@@ -28,12 +21,6 @@ class DBD_Settings
       esc_html__('Customize Admin Area', 'disbydem'),
       array('DBD_Settings', 'dbd_callback_section_admin'),
       'dbd_admin_menu'
-    );
-    add_settings_section(
-      'dbd_section_channels',
-      esc_html__('Customize Social Channels Page', 'disbydem'),
-      array('DBD_Settings', 'dbd_callback_channel_settings'),
-      'dbd_channels'
     );
 
     /*
@@ -114,49 +101,29 @@ class DBD_Settings
       ['id' => 'custom_api_key', 'label' => esc_html__('Custom API Key', 'disbydem')]
     );
 
-    add_settings_field(
-      'channel_name',
-      esc_html__('Channel Name', 'disbydem'),
-      array('DBD_Settings', 'dbd_channels_callback_field_text'),
-      'dbd_channels',
-      'dbd_section_channels',
-      ['id' => 'channel_name', 'label' => esc_html__('Channel Name', 'disbydem')]
-    );
+    // add_settings_field(
+    //   'channel_name',
+    //   esc_html__('Channel Name', 'disbydem'),
+    //   array('DBD_Settings', 'dbd_channels_callback_field_text'),
+    //   'dbd_admin_menu',
+    //   'dbd_section_channels',
+    //   ['id' => 'channel_name', 'label' => esc_html__('Channel Name', 'disbydem')]
+    // );
 
-    add_settings_field(
-      'channel_platform',
-      esc_html__('Channel platform', 'disbydem'),
-      array('DBD_Settings', 'dbd_callback_platform_select'),
-      'dbd_channels',
-      'dbd_section_channels',
-      ['id' => 'channel_platform', 'label' => esc_html__('Channel platform', 'disbydem')]
-    );
-  }
-
-  // callback: channel section
-  public static function dbd_callback_channel_settings()
-  {
-    echo '<p>' . esc_html__('Configure the DBD channel settings', 'disbydem') . '</p>';
+    // add_settings_field(
+    //   'channel_platform',
+    //   esc_html__('Channel platform', 'disbydem'),
+    //   array('DBD_Settings', 'dbd_callback_platform_select'),
+    //   'dbd_admin_menu',
+    //   'dbd_section_channels',
+    //   ['id' => 'channel_platform', 'label' => esc_html__('Channel platform', 'disbydem')]
+    // );
   }
 
   // callback: login section
   public static function dbd_callback_section_admin()
   {
     echo '<p>' . esc_html__('These settings enable you to configure the DBD settings', 'disbydem') . '</p>';
-  }
-
-  // callback: text field
-  public static function dbd_channels_callback_field_text($args)
-  {
-    $options = get_option('channel_settings', dbd_channels_default());
-
-    $id    = isset($args['id'])    ? $args['id']    : '';
-    $label = isset($args['label']) ? $args['label'] : '';
-
-    $value = isset($options[$id]) ? sanitize_text_field($options[$id]) : '';
-
-    echo '<input id="channel_settings_' . $id . '" name="channel_settings[' . $id . ']" type="text" size="40" value="' . $value . '"><br />';
-    echo '<label for="channel_settings_' . $id . '">' . $label . '</label>';
   }
 
   // callback: text field
@@ -233,7 +200,7 @@ class DBD_Settings
     echo '<label for="dbd_options_' . $id . '">' . $label . '</label>';
   }
 
-  // callbac for select options
+  // callback for select options
   public static function dbd_callback_select_options($options)
   {
     $style_options = array(
@@ -283,30 +250,6 @@ class DBD_Settings
     }
 
     echo '</select> <label for="dbd_options_' . $id . '">' . $label . '</label>';
-  }
-
-  // callback: select channel platform field
-  public static function dbd_callback_platform_select($args)
-  {
-    $options = get_option('channel_settings_', dbd_channels_default());
-
-    $id    = isset($args['id'])    ? $args['id']    : '';
-    $label = isset($args['label']) ? $args['label'] : '';
-
-    $selected_option = isset($options[$id]) ? sanitize_text_field($options[$id]) : '';
-
-    $select_options = self::dbd_callback_select_options('platform');
-
-    echo '<select id="channel_settings_' . $id . '" name="channel_settings[' . $id . ']">';
-
-    foreach ($select_options as $value => $option) {
-
-      $selected = selected($selected_option === $value, true, false);
-
-      echo '<option value="' . $value . '"' . $selected . '>' . $option . '</option>';
-    }
-
-    echo '</select> <label for="channel_settings_' . $id . '">' . $label . '</label>';
   }
 
   // callback: sensitive field

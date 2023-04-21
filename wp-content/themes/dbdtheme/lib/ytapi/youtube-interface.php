@@ -22,14 +22,6 @@ function dbd_options_default()
   );
 }
 
-function dbd_channels_default()
-{
-  return array(
-    'channel_name'     => 'DisByDem',
-    'channel_platform'   => esc_html__('youtube', 'disbydem'),
-  );
-}
-
 // Display the video analytics page
 /* function display_video_analytics()
 {

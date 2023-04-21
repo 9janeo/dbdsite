@@ -22,6 +22,7 @@ class Dbd_Admin
     require_once('class.dbd-youtube.php');
     require_once('class.dbd-menu.php');
     require_once('class.dbd-settings.php');
+    require_once('class.dbd-channel-settings.php');
 
     if (!self::$initiated) {
       self::init_hooks();
@@ -38,6 +39,7 @@ class Dbd_Admin
     Dbd_Youtube::init();
     add_action('admin_menu', array('Dbd_Menu', 'admin_menu'));
     add_action('admin_init', array('DBD_settings', 'dbd_register_settings'));
+    add_action('admin_init', array('DBD_Channels', 'dbd_register_channel_settings'));
 
     // load client
     // set up client scopes
@@ -98,10 +100,8 @@ class Dbd_Admin
   public static function display_channel_settings()
   {
     $dbd_user = 'Beta User';
-    $channel_settings = get_option('channel_settings');
     echo '<h3>DisByDem Channels: Display channel settings page</h3>';
-    var_dump($channel_settings);
-    Dbd_Admin::view('channels', compact('dbd_user', 'channel_settings'));
+    Dbd_Admin::view('channels', compact('dbd_user'));
   }
 
   public static function view($name, array $args = array())
