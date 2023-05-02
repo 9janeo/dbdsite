@@ -38,6 +38,7 @@ class Dbd_Admin
 
     Dbd_Youtube::init();
     add_action('admin_menu', array('Dbd_Menu', 'admin_menu'));
+    add_action('admin_init', array('DBD_Channels', 'ready_channels_table_into_db'));
     add_action('admin_init', array('DBD_settings', 'dbd_register_settings'));
     add_action('admin_init', array('DBD_Channels', 'dbd_register_channel_settings'));
 
