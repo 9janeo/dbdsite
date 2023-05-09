@@ -16,8 +16,8 @@ class DBD_Channels
       channel_name tinytext NOT NULL,
       platform tinytext NOT NULL,
       channel_username VARCHAR(20),
-      channel_id VARCHAR(25),
-      channel_url VARCHAR(25),
+      channel_id VARCHAR(50),
+      channel_url VARCHAR(50),
       PRIMARY KEY  (id),
       KEY channel_id (channel_id)
     ) $charset_collate;";
@@ -49,12 +49,14 @@ class DBD_Channels
     return array(
       'id'   => esc_html__('new channel id', 'disbydem'),
       'name'   => esc_html__('new channel', 'disbydem'),
-      'platform'   => esc_html__('youtube', 'disbydem')
+      'platform'   => esc_html__('youtube', 'disbydem'),
+      'channel_id'   => esc_html__('channel platform id', 'disbydem'),
     );
   }
 
   public static function dbd_register_channel_settings()
   {
+    
     // New channel
     add_settings_section(
       'dbd_section_new_channel',
@@ -259,32 +261,85 @@ class DBD_Channels
     <?php
   }
 
+  // Validate channel inputs
+  public static function dbd_callback_validate_channel($input) {
+    $error = array();
+    $warning = array();
+
+    $platfom_options = array(
+      'default'   => esc_html__('YouTube',  'disbydem'),
+      'tiktok'      => esc_html__('TikTok',    'disbydem'),
+      'instagram'    => esc_html__('Instagram',    'disbydem'),
+      'facebook' => esc_html__('Facebook',  'disbydem'),
+    );
+
+    // channel name
+    if (isset($input['channel_name'])) {
+      $input['channel_name'] = sanitize_text_field($input['channel_name']);
+    }
+    // channel platform supported
+    if (isset($input['channel_platform']) && !array_key_exists(sanitize_text_field($input['channel_platform']), $platfom_options)) {
+      $error['channel_platform'] = 'Channel platform not supported';
+      $input['channel_platform'] = null;
+    }
+    // channel username
+    if (isset($input['channel_username'])) {
+      $warning['channel_username'] = 'Channel username not set';
+      $input['channel_username'] = sanitize_text_field($input['channel_username']);
+    }
+    // channel ID
+    // ToDo: Check if channel id exists
+    if (isset($input['channel_id'])) {
+      $input['channel_id'] = sanitize_text_field($input['channel_id']);
+    }
+    // channel url
+    if (isset($input['channel_url'])) {
+      $input['channel_url'] = sanitize_url($input['channel_url']);
+    }
+
+    if (count($error) > 0) {
+      $input['errors'] = $error;
+    }
+    
+    if (count($warning) > 0) {
+      $input['warnings'] = $warning;
+    }
+
+    return $input;
+  }
+
   // Add new channel
   public static function add_new_dbd_channel(){
     if (isset($_POST['add_channel'])){
       // print_r($_POST);
-      dbd_callback_validate_options($_POST['add_channel']);
+      DBD_Channels::dbd_callback_validate_channel($_POST['add_channel']);
 
-      if(empty($_POST['errors'])){
+      if(!empty($_POST['errors'])){
+        print_r($_POST['errors']);
+        wp_die('Channel fields not valid');
+      } else {
         global $wpdb;
         $table_name = $wpdb->prefix.'channels';
-  
-        $wpdb->insert($table_name, array(
+
+        $data_ = array(
           'channel_name' => $_POST['channel_name'],
           'platform' => $_POST['channel_platform'],
           'channel_username' => $_POST['channel_username'],
           'channel_id' => $_POST['channel_id'],
           'channel_url'  => $_POST['channel_url'],
-        ), array('%s','%s','%s','%s','%s'));
+        );
+  
+        $result = $wpdb->insert($table_name, $data_, array('%s','%s','%s','%s','%s'));
 
-        echo "Channel added";
-      } else {
-        print_r($_POST['errors']);
+        if (false === $result){
+          print_r($wpdb->last_error);
+          // wp_die('Failed to add channel');
+        } else {
+          echo "Channel added";
+        }
+        // return print_r($_POST['errors']);
       }
     }
-
-    $is_error = empty($wpdb->last_error);
-    return $is_error;
-
   }
+
 }

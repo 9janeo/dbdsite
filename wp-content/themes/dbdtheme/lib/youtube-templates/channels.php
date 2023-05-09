@@ -3,6 +3,8 @@
   <div class="dbd-box">
     <!-- <h3>Pull Channel Settings </h3> -->
     <?php
+    // global $wpdb;
+    // $wpdb->show_errors();
 
     // var_dump($channel_settings);
     $channel_count = DBD_Channels::get_channel_counts() ;

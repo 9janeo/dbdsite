@@ -5,11 +5,12 @@ defined('ABSPATH') or die('Cant access this file directly');
 // Callback: validate plugin options
 function dbd_callback_validate_options($input)
 {
-  $error = array();
-  $warning = array();
+  // initialize error class
+  $errors = new WP_Error;
+  
   // custom url
   if (isset($input['custom_url'])) {
-    $input['custom_url'] = esc_url($input['custom_url']);
+    $input['custom_url'] = sanitize_url($input['custom_url']);
   }
 
   // custom title
@@ -72,39 +73,6 @@ function dbd_callback_validate_options($input)
 
   if (!array_key_exists($input['custom_scheme'], $style_options)) {
     $input['custom_scheme'] = null;
-  }
-
-  // channel inputs
-  // channel name
-  if (isset($input['channel_name'])) {
-    $input['channel_name'] = sanitize_text_field($input['channel_name']);
-  }
-  // channel platform supported
-  if (!array_key_exists(sanitize_text_field($input['channel_platform']), $platfom_options)) {
-    $error['channel_platform'] = 'Channel platform not supported';
-    $input['channel_platform'] = null;
-  }
-  // channel username
-  if (isset($input['channel_username'])) {
-    $warning['channel_username'] = 'Channel username not set';
-    $input['channel_username'] = sanitize_text_field($input['channel_username']);
-  }
-  // channel ID
-  // ToDo: Check if channel id exists
-  if (isset($input['channel_id'])) {
-    $input['channel_id'] = sanitize_text_field($input['channel_id']);
-  }
-  // channel url
-  if (isset($input['channel_url'])) {
-    $input['channel_url'] = esc_url($input['channel_url']);
-  }
-
-  if (count($error) > 0) {
-    $input['errors'] = $error;
-  }
-  
-  if (count($warning) > 0) {
-    $input['warnings'] = $warning;
   }
 
   return $input;
