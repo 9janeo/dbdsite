@@ -5,7 +5,8 @@ defined('ABSPATH') or die('Cant access this file directly');
 
 class DBD_Channels
 {
-  public static function ready_channels_table_into_db() {
+  public static function ready_channels_table_into_db()
+  {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
 
@@ -23,13 +24,14 @@ class DBD_Channels
     ) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta( $sql );
+    dbDelta($sql);
     $is_error = empty($wpdb->last_error);
 
     return $is_error;
   }
 
-  public static function get_dbd_channels(){
+  public static function get_dbd_channels()
+  {
     global $wpdb;
     $table_name = $wpdb->prefix . 'channels';
     $channels = $wpdb->get_results("SELECT * FROM {$table_name}");
@@ -41,112 +43,153 @@ class DBD_Channels
     global $wpdb;
     $table_name = $wpdb->prefix . 'channels';
     $rowcount = $wpdb->get_var("SELECT COUNT(*) FROM {$table_name}");
-    return isset($rowcount)? $rowcount : 0;
+    return isset($rowcount) ? $rowcount : 0;
+  }
+
+  public static function dbd_channel_fields()
+  {
+    /* 
+      return name, label, type, size and default value for each channel setting input field
+    */
+    return array(
+      'id' => array('id', null, 'hidden', 11, ''),
+      'channel_name' => array('channel_name', 'Channel Name', 'text', 40, ''),
+      'platform' => array('platform', 'Channel Platform', 'select', 20, ''),
+      'channel_username' => array('channel_username', 'Channel Username', 'text', 20, ''),
+      'channel_id' => array('channel_id', 'Channel ID', 'text', 50, ''),
+      'channel_url' => array('channel_url', 'Channel URL', 'text', 50, '')
+    );
+  }
+
+  static function dbd_add_channel_field($field_id, $title, $type, $size = 50, $value = '')
+  {
+    $page = 'dbd_channels';
+    $section = 'dbd_channel_tab';
+    $args = array(
+      'id' => esc_html__($field_id, 'disbydem'),
+      'label' => esc_html__($title, 'disbydem'),
+      'type' => esc_html__($type, 'disbydem'),
+      'size' => $size,
+      'value' => $value
+    );
+    // check type and dont render table row or <th> if hidden
+    add_settings_field(
+      $field_id,
+      esc_html__($title, 'disbydem'),
+      array('DBD_Channels', 'dbd_channel_render_input_field'),
+      $page,
+      $section,
+      $args
+    );
   }
 
   static function dbd_channel_defaults()
   {
     return array(
       'id'   => esc_html__('new channel id', 'disbydem'),
-      'name'   => esc_html__('new channel', 'disbydem'),
-      'platform'   => esc_html__('youtube', 'disbydem'),
-      'channel_id'   => esc_html__('channel platform id', 'disbydem'),
+      'channel_name'   => esc_html__('new channel', 'disbydem'),
+      'channel_platform'   => esc_html__('youtube', 'disbydem'),
+      'channel_username'   => esc_html__('@Username', 'disbydem'),
+      'channel_id'   => esc_html__('Channel ID', 'disbydem'),
+      'channel_url'   => esc_html__('Channel URL', 'disbydem')
     );
   }
 
   public static function dbd_register_channel_settings()
   {
-    
     // New channel
     add_settings_section(
-      'dbd_section_new_channel',
-      esc_html__('Add a new channel', 'disbydem'),
-      array('DBD_Channels', 'dbd_callback_add_channel'),
+      'dbd_section_channel',
+      esc_html__('Channel Details', 'disbydem'),
+      array('DBD_Channels', 'dbd_callback_display_channel'),
       'dbd_channels'
     );
 
     add_settings_field(
       'channel_name',
-      esc_html__('New channel Name', 'disbydem'),
-      array('DBD_Channels', 'dbd_channels_callback_new_channel'),
+      esc_html__('Custom Channel Name', 'disbydem'),
+      array('DBD_Channels', 'dbd_channels_callback_channel_name'),
       'dbd_channels',
-      'dbd_section_new_channel',
-      ['label' => esc_html__('Channel Name', 'disbydem')]
+      'dbd_section_channel',
+      ['id' => esc_html__('channel_name', 'disbydem'), 'label' => esc_html__('Channel Name', 'disbydem'), 'channel' => ($channel ?? null)]
     );
 
     add_settings_field(
       'channel_platform',
-      esc_html__('Select channel platform', 'disbydem'),
-      array('DBD_Channels', 'dbd_channels_callback_new_select'),
+      esc_html__('Select Channel Platform', 'disbydem'),
+      array('DBD_Channels', 'dbd_channels_callback_select'),
       'dbd_channels',
-      'dbd_section_new_channel',
-      ['label' => esc_html__('Channel platform', 'disbydem')]
-    );
-    
-    add_settings_field(
-      'Username',
-      esc_html__('Input channel username', 'disbydem'),
-      array('DBD_Channels', 'dbd_channels_callback_new_username'),
-      'dbd_channels',
-      'dbd_section_new_channel',
-      ['label' => esc_html__('Username', 'disbydem')]
-    );
-    
-    add_settings_field(
-      'channel_id',
-      esc_html__('Input channel ID', 'disbydem'),
-      array('DBD_Channels', 'dbd_channels_callback_new_channel_id'),
-      'dbd_channels',
-      'dbd_section_new_channel',
-      ['label' => esc_html__('Channel ID', 'disbydem')]
-    );
-    
-    add_settings_field(
-      'channel_url',
-      esc_html__('Input channel URL', 'disbydem'),
-      array('DBD_Channels', 'dbd_channels_callback_url'),
-      'dbd_channels',
-      'dbd_section_new_channel',
-      ['label' => esc_html__('Channel URL', 'disbydem')]
+      'dbd_section_channel',
+      ['id' => esc_html__('channel_platform', 'disbydem'), 'label' => esc_html__('Channel platform', 'disbydem')]
     );
 
-    // if (self::get_channel_counts() > 0) {
-    //   add_settings_section(
-    //     'dbd_section_channels',
-    //     esc_html__('Update channel details', 'disbydem'),
-    //     array('DBD_Channels', 'dbd_callback_display_channels'),
-    //     'dbd_channels'
-    //   );
-    // }
+    add_settings_field(
+      'Username',
+      esc_html__('Channel Username', 'disbydem'),
+      array('DBD_Channels', 'dbd_channels_callback_username'),
+      'dbd_channels',
+      'dbd_section_channel',
+      ['id' => esc_html__('channel_username', 'disbydem'), 'label' => esc_html__('Username', 'disbydem')]
+    );
+
+    add_settings_field(
+      'channel_id',
+      esc_html__('Channel ID', 'disbydem'),
+      array('DBD_Channels', 'dbd_channels_callback_channel_id'),
+      'dbd_channels',
+      'dbd_section_channel',
+      ['id' => esc_html__('channel_id', 'disbydem'), 'label' => esc_html__('Channel ID', 'disbydem')]
+    );
+
+    add_settings_field(
+      'channel_url',
+      esc_html__('Channel URL', 'disbydem'),
+      array('DBD_Channels', 'dbd_channels_callback_url'),
+      'dbd_channels',
+      'dbd_section_channel',
+      ['id' => esc_html__('channel_url', 'disbydem'), 'label' => esc_html__('Channel URL', 'disbydem')]
+    );
   }
 
   // callback: channel section
-  public static function dbd_callback_display_channels()
+  public static function dbd_callback_display_channel($args)
   {
-    echo '<p>' . esc_html__('Configure the DBD channel settings', 'disbydem') . '</p>';
-    // dbd_channels_callback_field_text();
-    // $options = get_option('channel_settings');
-    // var_dump($options);
+    if (!isset($args['channel']) || empty($args['channel'])) {
+      echo '<p>' . esc_html__('New DBD channel form loads here', 'disbydem') . '</p>';
+    } else {
+      $channel = $args['channel'];
+      echo '<p>' . esc_html__("Configure " . $channel->channel_name ?? null . " channel settings", 'disbydem') . '</p>';
+    }
+  }
 
-    // foreach ($options as $key => $channel) {
-    // add_settings_field(
-    //   'channel_name',
-    //   esc_html__('The channel Name', 'disbydem'),
-    //   array('DBD_Channels', 'dbd_channels_callback_field_text'),
-    //   'dbd_channels',
-    //   'dbd_section_channels',
-    //   ['channel' => $key, 'id' => 'channel_name', 'label' => esc_html__('Channel Name', 'disbydem')]
-    // );
+  public static function dbd_channel_render_input_field($args)
+  {
+    $id = $args['id'];
+    $label = $args['label'];
+    $type = $args['type'];
+    $size = $args['size'];
+    $value = $args['value'];
+    $platform_options = self::dbd_callback_select_options('platform');
 
-    // add_settings_field(
-    //   'channel_platform',
-    //   esc_html__('The channel platform', 'disbydem'),
-    //   array('DBD_Channels', 'dbd_callback_platform_select'),
-    //   'dbd_channels',
-    //   'dbd_section_channels',
-    //   ['channel' => $key, 'id' => 'channel_platform', 'label' => esc_html__('Channel platform', 'disbydem')]
-    // );
-    // }
+    switch ($type) {
+      case 'hidden':
+        echo '<input type="' . $type . '" id="' . $id . '" name="' . $id . '" size="' . $size . '" placeholder="' . $label . '" value="' . $value . '">';
+        break;
+      case 'text':
+        echo '<input id="' . $id . '" name="' . $id . '" type="' . $type . '" size="' . $size . '" placeholder="' . $label . '" value="' . $value . '"><br />';
+        break;
+      case 'select':
+        $selected_option = $value;
+        echo '<select id="' . $id . '" name="' . $id . '">';
+        foreach ($platform_options as $value => $option) {
+          $selected = selected($selected_option === $value, true, false);
+          echo '<option value="' . $value . '"' . $selected . '>' . $option . '</option>';
+        }
+        echo '</select><br />';
+        break;
+      default:
+        echo '<input disabled id="' . $id . '" name="' . $id . '" type="' . $type . '" size="' . $size . '" placeholder="' . $label . '" value="' . $value . '"><br />';
+    }
   }
 
   // callback: channel section
@@ -173,105 +216,117 @@ class DBD_Channels
   }
 
   // callback: new Channel name
-  static function dbd_channels_callback_new_channel($args)
+  static function dbd_channels_callback_channel_name($args)
   {
-    $options = self::dbd_channel_defaults();
-    $channel_defaults = self::dbd_channel_defaults();
+    echo '<br>';
     $label = isset($args['label']) ? $args['label'] : '';
-    $select_options = self::dbd_callback_select_options('platform');
     echo '<input id="channel_name" name="channel_name" type="text" size="40" placeholder="' . $label . '" value=""><br />';
   }
-  
+
   // callback: new Channel ID
-  static function dbd_channels_callback_new_channel_id($args)
+  static function dbd_channels_callback_channel_id($args)
   {
-    $options = self::dbd_channel_defaults();
-    $channel_defaults = self::dbd_channel_defaults();
+    $id = isset($args['id']) ? $args['id'] : '';
     $label = isset($args['label']) ? $args['label'] : '';
-    echo '<input id="channel_id" name="channel_id" type="text" size="40" placeholder="' . $label . '" value=""><br />';
+    echo '<input id="' . $id . '" name="' . $id . '" type="text" size="40" placeholder="' . $label . '" value=""><br />';
   }
-  
+
   // callback: new Channel Username
-  static function dbd_channels_callback_new_username($args)
+  static function dbd_channels_callback_username($args)
   {
-    $options = self::dbd_channel_defaults();
-    $channel_defaults = self::dbd_channel_defaults();
+    $id = isset($args['id']) ? $args['id'] : '';
     $label = isset($args['label']) ? $args['label'] : '';
-    echo '<input id="channel_username" name="channel_username" type="text" size="40" placeholder="' . $label . '" value=""><br />';
+    echo '<input id="' . $id . '" name="channel_username" type="text" size="40" placeholder="' . $label . '" value=""><br />';
   }
-  
+
   // callback: new Channel URL
   static function dbd_channels_callback_url($args)
   {
-    $options = self::dbd_channel_defaults();
-    $channel_defaults = self::dbd_channel_defaults();
+    $id = isset($args['id']) ? $args['id'] : '';
     $label = isset($args['label']) ? $args['label'] : '';
-    echo '<input id="channel_url" name="channel_url" type="text" size="40" placeholder="' . $label . '" value=""><br />';
+    echo '<input id="' . $id . '" name="' . $id . '" type="text" size="40" placeholder="' . $label . '" value=""><br />';
   }
 
   // callback: new channel platform
-  public static function dbd_channels_callback_new_select($args)
+  public static function dbd_channels_callback_select($args)
   {
     $options = self::dbd_channel_defaults();
-    $id    = '';
-    $label = isset($args['label']) ? $args['label'] : '';
+    $id      = isset($args['id']) ? $args['id'] : '';
+    $label   = isset($args['label']) ? $args['label'] : '';
     $selected_option = isset($options['platform']) ? sanitize_text_field($options['platform']) : '';
     $select_options = self::dbd_callback_select_options('platform');
-    echo '<select id="channel_platform" name="channel_platform">';
+    echo '<select id="' . $id . '" name="' . $id . '">';
     foreach ($select_options as $value => $option) {
       $selected = selected($selected_option === $value, true, false);
       echo '<option value="' . $value . '"' . $selected . '>' . $option . '</option>';
     }
-    echo '<label for="channel_platform' . '_' . $id . '">' . $label . '</label>';
   }
 
   // New channel form
-  public static function new_channel_form() {
-    if (isset($_POST['add_channel'])){
+  public static function new_channel_form()
+  {
+    if (isset($_POST['add_channel'])) {
       DBD_Channels::add_new_dbd_channel();
-      // global $wpdb;
-      // $table_name = $wpdb->prefix . 'channels';
-
-      // $wpdb->insert($table_name, array(
-      //   'channel_name' => $_POST['channel_name'],
-      //   'platform' => $_POST['channel_platform'],
-      //   'username' => $_POST['username'],
-      //   'channel_id' => $_POST['channel_id'],
-      //   'channel_url'  => $_POST['channel_url'],
-      // ), array('%s','%s','%s','%s','%s'));
-
     }
-  ?>
-    <form action="" role="presentation" method="post">
+?>
+    <form action="" role="presentation" method="post" class="channel_add">
       <?php
-      // output security fields
-      // settings_fields('channel_settings');
-
       // output setting sections
       do_settings_sections('dbd_channels');
-      // do_settings_sections('dbd_section_new_channel');
 
       // submit button
       submit_button('Add Channel', 'primary', 'add_channel');
-      // submit_button('Add Channel');
-
       ?>
       <hr>
     </form>
-    <?php
+  <?php
+    return;
   }
 
+  // Channel Details Form
+  public static function edit_channel_form($channel)
+  {
+    // update channel details
+    if (isset($_POST['edit_dbd_channel'])) {
+      DBD_Channels::edit_dbd_channel();
+    }
+  ?>
+    <form action="" role="presentation" method="post" class="edit_channel">
+      <?php
+      settings_fields('dbd_channels');
+      echo '<table class="form-table">';
+
+      $inputs = DBD_Channels::dbd_channel_fields();
+      foreach ($channel as $key => $field_value) {
+        $field_id = $inputs[$key][0];
+        $title = $inputs[$key][1];
+        $type = $inputs[$key][2];
+        $size = $inputs[$key][3];
+        $value = $field_value;
+        DBD_Channels::dbd_add_channel_field($field_id, $title, $type, $size, $value);
+      }
+
+      // output edit channel setting sections
+      do_settings_fields('dbd_channels', 'dbd_channel_tab');
+      echo '</table>';
+
+      // submit button
+      submit_button('Edit Channel', 'secondary', 'edit_dbd_channel');
+      write_log("Update form loaded for dbd_channel \n");
+      ?>
+      <hr>
+    </form>
+<?php
+  }
+
+
   // Validate channel inputs
-  public static function dbd_callback_validate_channel($input) {
+  public static function dbd_callback_validate_channel($input)
+  {
     $error = array();
     $warning = array();
 
-    $platfom_options = array(
-      'default'   => esc_html__('YouTube',  'disbydem'),
-      'tiktok'      => esc_html__('TikTok',    'disbydem'),
-      'instagram'    => esc_html__('Instagram',    'disbydem'),
-      'facebook' => esc_html__('Facebook',  'disbydem'),
-    );
+    $platfom_options = self::dbd_callback_select_options('platform');
 
     // channel name
     if (isset($input['channel_name'])) {
@@ -300,7 +355,7 @@ class DBD_Channels
     if (count($error) > 0) {
       $input['errors'] = $error;
     }
-    
+
     if (count($warning) > 0) {
       $input['warnings'] = $warning;
     }
@@ -309,17 +364,17 @@ class DBD_Channels
   }
 
   // Add new channel
-  public static function add_new_dbd_channel(){
-    if (isset($_POST['add_channel'])){
-      // print_r($_POST);
+  public static function add_new_dbd_channel()
+  {
+    if (isset($_POST['add_channel'])) {
       DBD_Channels::dbd_callback_validate_channel($_POST['add_channel']);
 
-      if(!empty($_POST['errors'])){
+      if (!empty($_POST['errors'])) {
         print_r($_POST['errors']);
         wp_die('Channel fields not valid');
       } else {
         global $wpdb;
-        $table_name = $wpdb->prefix.'channels';
+        $table_name = $wpdb->prefix . 'channels';
 
         $data_ = array(
           'channel_name' => $_POST['channel_name'],
@@ -328,10 +383,10 @@ class DBD_Channels
           'channel_id' => $_POST['channel_id'],
           'channel_url'  => $_POST['channel_url'],
         );
-  
-        $result = $wpdb->insert($table_name, $data_, array('%s','%s','%s','%s','%s'));
 
-        if (false === $result){
+        $result = $wpdb->insert($table_name, $data_, array('%s', '%s', '%s', '%s', '%s'));
+
+        if (false === $result) {
           print_r($wpdb->last_error);
           // wp_die('Failed to add channel');
         } else {
@@ -342,4 +397,56 @@ class DBD_Channels
     }
   }
 
+  // update channel
+  public static function edit_dbd_channel()
+  {
+    if (isset($_POST['edit_dbd_channel'])) {
+      write_log("Attempting to validate update dbd_channel \n");
+      write_log($_POST);
+      DBD_Channels::dbd_callback_validate_channel($_POST['edit_dbd_channel']);
+
+      if (!empty($_POST['errors'])) {
+        write_log('Found field errors in validate');
+        write_log($_POST['errors']);
+        wp_die('Channel fields not valid');
+      } else {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'channels';
+
+        // Get corresponding id row from table| check against new data
+        $id = $_POST['id'];
+        $data_ = array(
+          'id' => $_POST['id'],
+          'channel_name' => $_POST['channel_name'],
+          'platform' => $_POST['platform'],
+          'channel_username' => $_POST['channel_username'],
+          'channel_id' => $_POST['channel_id'],
+          'channel_url'  => $_POST['channel_url'],
+        );
+        // check that channel with the different id and same channel_id||channel_name does not exist
+
+        // $updated = $wpdb->update( $table, $data, $where );
+
+        // if ( false === $updated ) {
+        //     // There was an error.
+        // } else {
+        //     // No error. You can check updated to see how many rows were changed.
+        // }
+        $where = array('id' => $id); // NULL value in WHERE clause.
+
+        $updated = $wpdb->update($table_name, $data_, $where, array('%d', '%s', '%s', '%s', '%s', '%s'), array('%d'));
+        // $result = $wpdb->update($table_name, $data_, array('%s', '%s', '%s', '%s', '%s'));
+
+        if (false === $updated) {
+          write_log($wpdb->last_error);
+          print_r($wpdb->last_error);
+          // wp_die('Failed to add channel');
+        } else {
+          echo "Channel updated";
+          // reload form
+        }
+        // return print_r($_POST['errors']);
+      }
+    }
+  }
 }
