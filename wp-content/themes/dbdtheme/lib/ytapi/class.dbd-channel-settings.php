@@ -65,12 +65,19 @@ class DBD_Channels
   {
     $page = 'dbd_channels';
     $section = 'dbd_channel_tab';
+    // Add hidden class to <tr> if field $type is hidden
+    $class = ($type == 'hidden') ? 'hidden' : '';
+    // Exclude label for attribute for field types here
+    $remove_for = array('hidden');
+    $for = (in_array($type, $remove_for)) ? '' : esc_html__($field_id, 'disbydem');
     $args = array(
       'id' => esc_html__($field_id, 'disbydem'),
       'label' => esc_html__($title, 'disbydem'),
+      'label_for' => $for,
       'type' => esc_html__($type, 'disbydem'),
       'size' => $size,
-      'value' => $value
+      'value' => $value,
+      'class' => $class
     );
     // check type and dont render table row or <th> if hidden
     add_settings_field(
