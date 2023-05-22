@@ -10,16 +10,17 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : $first_tab;
 
 <div class="wrap">
   <h1>Channel Settings</h1>
+
   <div class="dbd-box">
     <h2 class="nav-tab-wrapper">
       <?php if ($channel_count > 0) :  ?>
         <?php foreach ($channel_settings as $channel) {
           $name = $channel->channel_name;
         ?>
-          <a href="?page=dbd_channels&tab=<?= sanitize_title($name) ?>" class="nav-tab"><?php echo $name ?></a>
+          <a href="?page=dbd_channels&tab=<?= sanitize_title($name) ?>" class="nav-tab <?php echo ($active_tab == sanitize_title($name)) ? "nav-tab-active" : "" ?>"><?php echo $name ?></a>
         <?php } ?>
       <?php endif; ?>
-      <a href="?page=dbd_channels&tab=<?= "new_channel" ?>" class="nav-tab"><?php echo "New" ?></a>
+      <a href=" ?page=dbd_channels&tab=<?= "new_channel" ?>" class="nav-tab"><?php echo "New" ?></a>
     </h2>
 
     <?php if ($channel_count > 0) :
