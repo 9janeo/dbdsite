@@ -128,7 +128,7 @@ class Dbd_Admin
   {
     if (isset($playlists) && $playlists) :
       if (!($playlists->error)) : ?>
-        <div class="yt playlists row row-cols-2">
+        <div class="yt playlists row row-cols-3">
           <?php $videos = (object) array();
           foreach ($playlists->items as $key => $playlist) :
             $id = $playlist->id;
