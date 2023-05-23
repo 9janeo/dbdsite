@@ -100,24 +100,6 @@ class DBD_Settings
       'dbd_section_channels',
       ['id' => 'custom_api_key', 'label' => esc_html__('Custom API Key', 'disbydem')]
     );
-
-    // add_settings_field(
-    //   'channel_name',
-    //   esc_html__('Channel Name', 'disbydem'),
-    //   array('DBD_Settings', 'dbd_channels_callback_field_text'),
-    //   'dbd_admin_menu',
-    //   'dbd_section_channels',
-    //   ['id' => 'channel_name', 'label' => esc_html__('Channel Name', 'disbydem')]
-    // );
-
-    // add_settings_field(
-    //   'channel_platform',
-    //   esc_html__('Channel platform', 'disbydem'),
-    //   array('DBD_Settings', 'dbd_callback_platform_select'),
-    //   'dbd_admin_menu',
-    //   'dbd_section_channels',
-    //   ['id' => 'channel_platform', 'label' => esc_html__('Channel platform', 'disbydem')]
-    // );
   }
 
   // callback: login section
