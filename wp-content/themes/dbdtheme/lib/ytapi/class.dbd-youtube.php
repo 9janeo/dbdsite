@@ -1,6 +1,9 @@
 <?php
 
 // ToDo: Create a class wrapper for service with config functions for client
+
+use Google\Service\YouTube\Channel;
+
 class Dbd_Youtube
 {
 
@@ -69,6 +72,26 @@ class Dbd_Youtube
   }
 
   /**
+   * Returns the videos for a channel
+   * @param  mixed  $service      [Youtube service]
+   * @return mixed  $channel  [The channel object we want]
+   */
+  public static function get_channel_videos($channel, $maxResults = 25)
+  {
+    if (!isset($channel)) {
+      return "Channel Info not set, incorrect or incomplete";
+    }
+    $id = $channel->channel_id;
+    $max = $maxResults;
+
+    $req_url = "https://www.googleapis.com/youtube/v3/search?channelId=" . $id . "&order=date&part=snippet&type=video&maxResults=" . $max . "&key=" . self::API_KEY;
+    $response = wp_remote_get($req_url);
+    // $code = wp_remote_retrieve_response_code($response);
+    $result = json_decode(wp_remote_retrieve_body($response));
+    return $result;
+  }
+
+  /**
    * Returns the videos for a playlist
    * @param  mixed  $service      [Youtube service]
    * @return mixed  $playlist_id  [The id of the playlist we want]
@@ -80,7 +103,6 @@ class Dbd_Youtube
       'chart' => 'mostPopular',
       'regionCode' => 'CA',
       'maxResults' => 3
-      // 'id' => 'UCglE7vDtPHuulBhLvn9Q-eg'
     ];
     $response = $service->videos->listVideos('snippet,contentDetails,statistics', $queryParams);
     return $response;
@@ -116,20 +138,15 @@ class Dbd_Youtube
       'maxResults' => 25,
       'playlistId' => $playlist_id
     ];
-    // if (false === ($playlist_items = get_transient('playlist_items'))) {
     $playlist_items = self::$service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
     write_log('Attempt setting Playlist Items transient for playlist - ' . $playlist_id . " as - {$playlist_id}videos");
-    // set_transient("{$playlist_name}videos", $playlist_videos, DAY_IN_SECONDS);
-    // } else {
-    //   write_log('Retrieving Playlist Items transient for playlist - ' . $playlist_id);
-    // }
     return $playlist_items;
   }
 
   /**
    * Returns the playlists for a channel with it's corresponding videos
    */
-  public static function get_playlists_with_items()
+  public static function get_playlists_with_items($channel_id = '')
   {
     if (false === ($channel_playlists = get_transient('channel_playlists'))) {
       $queryParams = [

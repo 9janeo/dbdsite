@@ -10390,4 +10390,8 @@ div.yt .card .card-footer .playlist .list-group-item .video-title:not(.active) {
   overflow: hidden;
 }
 
+.channel-tabs .nav-tab {
+  border-radius: 0.25em 0.25em 0 0;
+}
+
 /*# sourceMappingURL=custom-admin-style.css.map */

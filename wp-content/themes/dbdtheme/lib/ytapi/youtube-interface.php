@@ -22,34 +22,6 @@ function dbd_options_default()
   );
 }
 
-// Display the video analytics page
-/* function display_video_analytics()
-{
-
-  // $playlists = get_playlists($service);
-  if (isset($playlists) && $playlists) {
-    if (!($playlists->error)) {
-?>
-      <div class="yt playlists row row-cols-2">
-        <?php
-        foreach ($playlists->items as $key => $playlist) {
-          $id = $playlist->id;
-          if (!($playlist->contentDetails->itemCount > 0)) {
-            // skip playlist if no items in it
-            // print_r("<br><h3>This playlist has no videos!!!</h3><br>");
-            continue;
-          }
-          $videos = Dbd_Youtube::get_playlist_items($id);
-          // get the playlist items
-          get_template_part('lib/youtube-templates/playlists', 'playlists', array('playlist' => $playlist, 'videos' => $videos));
-        }
-        ?>
-      </div>
-<?php
-    }
-  }
-} */
-
 // Retrieve the list of videos from the YouTube API
 function get_videos_from_youtube_api($key)
 {
