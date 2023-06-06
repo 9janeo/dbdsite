@@ -1,142 +1,88 @@
 <?php
+// Exit if accessed directly.
+defined('ABSPATH') || exit;
 
 // Register the options page for viewing video analytics
-add_action('admin_menu', 'register_video_analytics_page');
-function register_video_analytics_page() {
-    add_options_page(
-        'Video Analytics',
-        'Video Analytics',
-        'manage_options',
-        'video-analytics',
-        'display_video_analytics'
-    );
-}
+// begin wrapping in classes
+require_once('class.dbd-admin.php');
+add_action('init', array('Dbd_Admin', 'init'), 0); # Start initializationn of custom YT classes
 
-// Display the video analytics page
-function display_video_analytics() {
-    if (!current_user_can('manage_options')) {
-        wp_die('You do not have sufficient permissions to access this page.');
-    }
-
-    // initialize YouTube key
-    $yt_key = get_field('Youtube_API_key', 'options');
-?>
-
-    <div class="wrap">
-        <h1>Settings</h1>
-        <form role="presentation" action="yt_settings">
-            <table class="form-table">
-                <tbody>
-                    <tr>
-                        <th scope="row"><label for="channel_id">Channel ID</label></th>
-                        <td><input name="channelid" type="text" aria-describedby="youtube-channel-id" name="channel_id" id="channel_id" placeholder="YouTube channel id" class="regular-text"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label for="channel_name">Channel Name</label></th>
-                        <td><input type="text" name="channel_name" id="channel_name" class="regular-text"></td>
-                    </tr>
-                    <tr>
-                        <td><input type="submit" name="submit" class="button button-primary" value="save">
-                            <input type="reset" name="reset" class="button button-danger" value="clear">
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
-    </div>
-    <hr>
-    
-<?php
-
-
-    // Get the list of videos from the YouTube API
-    $video_list = get_videos_from_youtube_api($yt_key);
-    print_r("video_list:- \n");
-    var_dump($video_list);
-
-    ?>
-    <div class="wrap">
-        <h1>Video Analytics</h1>
-        <table class="wp-list-table widefat fixed striped">
-            <thead>
-                <tr>
-                    <th scope="col">Video Title</th>
-                    <th scope="col">Views</th>
-                    <th scope="col">Analytics</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php print_r("video_list: \n") ?>
-                <?php var_dump($video_list) ?>
-                <?php if (!($video_list->error)) :
-                    foreach ($video_list as $video) : ?>
-                        <tr>
-                            <td><?php echo $video['title']; ?></td>
-                            <td><?php echo $video['views']; ?></td>
-                            <td><a href="<?php echo $video['analytics_url']; ?>">View Analytics</a></td>
-                        </tr>
-                        <tr>
-                            <td><?php echo $video['title']; ?></td>
-                            <td><?php echo $video['views']; ?></td>
-                            <td><a href="<?php echo $video['analytics_url']; ?>">View Analytics</a></td>
-                        </tr>
-                    <?php endforeach; 
-                else: ?>
-                        <tr><td><?php echo $video_list->error->message ?></td></tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-    <?php
+// default plugin options. these are used until the user makes edits
+function dbd_options_default()
+{
+  return array(
+    'custom_url'     => 'https://disbydem.com/',
+    'custom_title'   => esc_html__('What\'s your DBD\'ers scale?', 'disbydem'),
+    'custom_style'   => 'disable',
+    'custom_message' => '<p class="custom-message">' . esc_html__('My custom message', 'disbydem') . '</p>',
+    'custom_footer'  => esc_html__('Special message for users', 'disbydem'),
+    'custom_toolbar' => false,
+    'custom_scheme'  => 'default',
+    'custom_api_key'  => 'default',
+  );
 }
 
 // Retrieve the list of videos from the YouTube API
-function get_videos_from_youtube_api($key) {
-    // Replace this with your own code to make a request to the YouTube API
-		
-		$req_url = "https://www.googleapis.com/youtube/v3/videos?key=".$key."&part=snippet,contentDetails,statistics&Id=UC_x5XG1OV2P6uZZ5FSM9Ttw";
-		// $req_url = "https://www.googleapis.com/youtube/v3/videos?key=".$key;
-		$response = wp_remote_get($req_url);
-		$code = wp_remote_retrieve_response_code($response);
-        var_dump($code);
-        print_r("<br> === <br> \n");
-        $body = wp_remote_retrieve_body( $response );
-        var_dump($body);
-        print_r("<br> === <br> \n");
-		$result = json_decode($body);
-        print_r("<br> \n");
-		// if ($code == 200){
-		// 	$videos = $result;
-		// 	// $vid_snippet = $result->items[0]->snippet;
-		// 	// update_post_meta($post_ID, 'video_info', $vid_snippet);
-		// 	// $vid_title = $vid_snippet->title;
-		// 	// $vid_desc = $vid_snippet->description;
-		// 	// $vid_published = $vid_snippet->publishedAt;
-        //     print_r("get_videos_from_youtube > result <br> \n");
-        //     var_dump($result);
-        //     print_r("<br> \n");
-		// }
-        return $result;
-    // and retrieve the list of videos, views, and analytics URL
-		// GET https://www.googleapis.com/youtube/v3/videos
+function get_videos_from_youtube_api($key)
+{
+  // Replace this with your own code to make a request to the YouTube API
+  $req_url = "https://www.googleapis.com/youtube/v3/videos?key=" . $key . "&part=snippet,contentDetails,statistics&Id=UC_x5XG1OV2P6uZZ5FSM9Ttw";
+  $response = wp_remote_get($req_url);
+  $code = wp_remote_retrieve_response_code($response);
+  $body = wp_remote_retrieve_body($response);
+  $result = json_decode($body);
+  return $result;
+}
 
-    // For example purposes, let's just return a dummy list of videos
-		// return print_r($videos);
-    // return array(
-    //     array(
-    //         'title' => 'Sample Video 1',
-    //         'views' => 1000,
-    //         'analytics_url' => 'https://www.youtube.com/analytics/video/1',
-    //     ),
-    //     array(
-    //         'title' => 'Sample Video 2',
-    //         'views' => 500,
-    //         'analytics_url' => 'https://www.youtube.com/analytics/video/2',
-    //     ),
-    //     array(
-    //         'title' => 'Sample Video 3',
-    //         'views' => 2000,
-    //         'analytics_url' => 'https://www.youtube.com/analytics/video/3',
-    //     ),
-    // );
+// $response = $service->channels->listChannels('snippet,contentDetails,statistics,status', $queryParams);
+function load_channel_details($channel_id, $client, $service)
+{
+  $massmutterer = (object) array(
+    'user_id' => 'd7P5_8tEWJdB3twoTI3vYg',
+    'channel_id' => 'UCd7P5_8tEWJdB3twoTI3vYg',
+    'channel_name' => 'MassMutterer'
+  );
+
+  $client->setAuthConfig(__DIR__ . '/../client_secret.json');
+
+  if ($channel_id) {
+    $queryParams = [
+      // 'forUsername' => 'DISBYDEM'
+      'forUsername' => $massmutterer->channel_name
+    ];
+    // $service = new Google\Service\YouTube($client);
+    $response = $service->channels->listChannels('snippet,contentOwnerDetails,statistics,status', $queryParams);
+    print_r($response);
+    return $response;
+  } else {
+    return 'Set Channel Name and ID to view details';
+  }
+}
+
+function load_videos($channel_id, $client, $service)
+{
+  $queryParams = [
+    'id' => 'Ks-_Mh1QhMc'
+  ];
+  $response = $service->videos->listVideos('snippet,contentDetails,statistics,status', $queryParams);
+  return $response;
+}
+
+
+
+/**
+ * Returns a url based on the source type provided
+ * @return string  $resource_id  [The id of the resource]
+ * @return string  $source_type  [The type of resource link to be generated]
+ */
+function build_link($id, $type = '')
+{
+  $base = 'https://www.youtube.com/watch?v=';
+  $tail = "&ab_channel=DISBYDEM";
+  if ($type == 'video') {
+    $link = $base . $id . $tail;
+  } else {
+    $link = $base . $id;
+  }
+  return $link;
 }

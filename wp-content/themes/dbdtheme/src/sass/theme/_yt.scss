@@ -1,0 +1,42 @@
+div.yt {
+  .card {
+    .card-footer{
+      padding: 0;
+      .playlist {
+        .list-group-item {
+          .video-title {
+            margin: none;
+            &:not(.active){
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 1;
+              overflow: hidden;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.channel-tabs {
+  .nav-tab {
+    border-radius: 0.25em 0.25em 0 0;
+  }
+}
+.analytics {
+  .accordion-item {
+    .accordion-header {
+      cursor: pointer;
+      .accordion-button {
+        div {
+          h4 {
+            margin-bottom: 0;
+          }
+          span {
+            font-style: italic;
+          }
+        }
+      }
+    }
+  }
+}
