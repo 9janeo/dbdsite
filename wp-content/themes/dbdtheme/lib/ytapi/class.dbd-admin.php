@@ -120,17 +120,19 @@ class Dbd_Admin
     include($file);
   }
 
-  /*
-  * Displays youtube playlist
-  * ToDo: Convert to use view function
-  */
+  /**
+  * Displays youtube playlists
+  * @param  array  $playlists  [The feed of playlists to display]
+  * @param bool $listvideo  [Control if video list will be loaded with each playlist displayed]
+  **/
   public static function display_playlists($playlists, $listvideo = false)
   {
     if (isset($playlists) && $playlists) :
-      if (!($playlists->error)) : ?>
+      if (!isset($playlists->error)) : ?>
         <div class="yt playlists row row-cols-3">
           <?php $videos = (object) array();
-          foreach ($playlists->items as $key => $playlist) :
+          foreach ($playlists as $key => $playlist) :
+            // var_dump($playlist);
             $id = $playlist->id;
             if (!($playlist->contentDetails->itemCount > 0)) {
               continue; # skip playlist if no items in it
@@ -138,13 +140,13 @@ class Dbd_Admin
             <div class="card pl_<?= $key + 1 ?> mb-3">
               <?php get_template_part('lib/youtube-templates/playlists', 'playlists', $playlist); ?>
               <div class="card-footer py-2">
-                <?php if (isset($listvideo) && $listvideo) :
+                <?php if ($listvideo == true && isset($playlist->items) && $playlist->items) :
                   // if listvideo parameter is true get the playlist items
-                  $videos = DBD_Youtube::get_playlist_items($id);
+                  $videos = $playlist->items;
                 ?>
-                  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-target="#list_<?php echo $id; ?>" data-bs-target="#list_<?php echo $id; ?>" aria-expanded="false" aria-controls="collapseVideoList">Show videos
+                  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-target="#list_<?php echo $id; ?>" data-bs-target="#list_<?php echo $id; ?>" aria-expanded="false" aria-controls="collapseVideoList">Toggle list
                   </button>
-                  <div id="list_<?php echo $id ?>" class="collapse show playlist mt-2">
+                  <div id="list_<?php echo $id ?>" class="collapse playlist mt-2">
                     <?php get_template_part('lib/youtube-templates/video_list', 'video_list', $videos); ?>
                   </div>
                 <?php endif; ?>
@@ -152,7 +154,9 @@ class Dbd_Admin
             </div>
           <?php endforeach; ?>
         </div>
-<?php endif;
+      <?php else :
+        return print_r($playlist->error);
+      endif;
     endif;
   }
 }

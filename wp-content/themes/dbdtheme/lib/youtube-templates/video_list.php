@@ -5,10 +5,7 @@ $video_list = $args;
 ?>
 <?php if (!(isset($video_list->error) && $video_list->error)) : ?>
   <ul class="list-group videos">
-    <?php foreach ($video_list as $video) :
-      if (($video->status->privacyStatus == 'private')) {
-        continue;
-      } ?>
+    <?php foreach ($video_list as $video) : ?>
       <li class="list-group-item d-flex justify-content-between align-items-center video">
         <div class="d-flex w-100 justify-content-between">
           <small class="video-title text-bold mb-1"><?php echo $video->snippet->title; ?></small>

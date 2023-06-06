@@ -111,58 +111,100 @@ class Dbd_Youtube
   /**
    * Returns the playlists for a channel
    * @param  mixed  $service      [Youtube service]
-   * @return mixed  $args         [The query params for the call]
+   * @return mixed  $channel_id  [The id of the channel to retrieve playlists from]
    */
-  public static function get_playlists()
+  public static function get_playlists($channel_id = '')
   {
     // if (false === ($channel_playlists = get_transient('channel_playlists'))) {
     $queryParams = [
-      'channelId' => 'UCglE7vDtPHuulBhLvn9Q-eg',
+      'channelId' => $channel_id,
       'maxResults' => 25
     ];
-    $channel_playlists = self::$service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
-    // find a way to filter the response for empty or private playlists
-    // set_transient('channel_playlists', $channel_playlists, DAY_IN_SECONDS);
-    // }
-    return $channel_playlists;
-  }
 
-  /**
-   * Accepts a playlist id and returns the videos for a playlist
-   * @param  mixed  $service      [Youtube service]
-   * @return mixed  $playlist_id  [The id of the playlist we want]
-   */
-  public static function get_playlist_items($playlist_id)
-  {
-    $queryParams = [
-      'maxResults' => 25,
-      'playlistId' => $playlist_id
-    ];
-    $playlist_items = self::$service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
-    write_log('Attempt setting Playlist Items transient for playlist - ' . $playlist_id . " as - {$playlist_id}videos");
-    return $playlist_items;
-  }
-
-  /**
-   * Returns the playlists for a channel with it's corresponding videos
-   */
-  public static function get_playlists_with_items($channel_id = '')
-  {
-    if (false === ($channel_playlists = get_transient('channel_playlists'))) {
-      $queryParams = [
-        'channelId' => 'UCglE7vDtPHuulBhLvn9Q-eg',
-        'maxResults' => 25
-      ];
+    try {
       $channel_playlists = self::$service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
-      set_transient('channel_playlists', $channel_playlists, DAY_IN_SECONDS);
+      $playlists = array();
+      // set_transient('channel_playlists', $channel_playlists, DAY_IN_SECONDS);
       foreach ($channel_playlists->items as $index => $playlist) {
         $id = $playlist->id;
         if (!($playlist->contentDetails->itemCount > 0)) {
           // skip playlist if no items in it
           continue;
         }
+        array_push($playlists,json_encode($playlist));
       }
+      return $playlists;
     }
-    return $channel_playlists;
+
+    catch(Exception $e) {
+      echo 'Message: ' .$e->getMessage();
+    }
+  }
+
+  /**
+   * Accepts a playlist id and returns the items in the playlist
+   * @param  mixed  $service      [Youtube service]
+   * @return mixed  $playlist_id  [The id of the playlist we want]
+   */
+  public static function get_playlist_items($playlist_id)
+  {
+    $queryParams = [
+      'playlistId' => $playlist_id
+    ];
+    write_log('Attempt setting Playlist Items transient for playlist - ' . $playlist_id . " as - {$playlist_id}videos");
+    $playlist_items = array();
+    try {
+      $playlist_items = self::$service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
+      return $playlist_items;
+    }
+    catch (Exception $e) {
+      write_log('Error getting Playlist Items for playlist - ' . $playlist_id);
+      return false;
+    }
+  }
+
+  /**
+   * Returns the playlists for a channel with it's corresponding videos
+   * return mixed  $channel_id  [The id of the channel to retrieve playlists from]
+   */
+  public static function get_playlists_with_items($channel_id = '')
+  {
+    $queryParams = [
+      'channelId' => $channel_id,
+      'maxResults' => 25
+    ];
+
+    try {
+      $channel_playlists = self::$service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
+      $playlists = array();
+      // set_transient('channel_playlists', $channel_playlists, DAY_IN_SECONDS);
+      foreach ($channel_playlists->items as $index => $playlist) {
+        $id = $playlist->id;
+        // get the corresponding playlist items
+        $items = self::get_playlist_items($playlist->id)->items;
+        if (!($playlist->contentDetails->itemCount > 0)) {
+          // skip playlist if no items in it
+          continue;
+        }
+        $public = array ();
+        // count playlist items that are public
+        foreach($items as $item){
+          if (($item->status->privacyStatus == 'private')) {
+            continue;
+          }
+          array_push($public, $item);
+        }
+        if(!(count($public) > 0) ){
+          // skip playlist if there are no public videos
+          continue;
+        }
+        $playlist->items = $public;
+        array_push($playlists,$playlist);
+      }
+      return $playlists;
+    }
+    catch(Exception $e) {
+      echo 'Message: ' .$e->getMessage();
+    }
   }
 }
