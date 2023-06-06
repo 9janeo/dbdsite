@@ -14733,6 +14733,16 @@ div.yt .card .card-footer .playlist .list-group-item .video-title:not(.active) {
   border-radius: 0.25em 0.25em 0 0;
 }
 
+.analytics .accordion-item .accordion-header {
+  cursor: pointer;
+}
+.analytics .accordion-item .accordion-header .accordion-button div h4, .analytics .accordion-item .accordion-header .accordion-button div .h4 {
+  margin-bottom: 0;
+}
+.analytics .accordion-item .accordion-header .accordion-button div span {
+  font-style: italic;
+}
+
 .has-blue-color,
 .has-blue-color:visited {
   color: #0d6efd;

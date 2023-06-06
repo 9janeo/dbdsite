@@ -23,3 +23,20 @@ div.yt {
     border-radius: 0.25em 0.25em 0 0;
   }
 }
+.analytics {
+  .accordion-item {
+    .accordion-header {
+      cursor: pointer;
+      .accordion-button {
+        div {
+          h4 {
+            margin-bottom: 0;
+          }
+          span {
+            font-style: italic;
+          }
+        }
+      }
+    }
+  }
+}
