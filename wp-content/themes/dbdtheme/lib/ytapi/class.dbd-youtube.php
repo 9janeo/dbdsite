@@ -128,13 +128,18 @@ class Dbd_Youtube
       // set_transient('channel_playlists', $channel_playlists, DAY_IN_SECONDS);
       foreach ($channel_playlists->items as $index => $playlist) {
         $id = $playlist->id;
+        $url = $playlist->snippet->thumbnails->high->url;
         if (!($playlist->contentDetails->itemCount > 0)) {
           // skip playlist if no items in it
           continue;
         }
+        $arr_of_vars = explode("/", parse_url($url, PHP_URL_PATH));
+        $indexVid = $arr_of_vars[2];
+        $url = 'https://www.youtube.com/watch?v=' . $indexVid . '&list=' . $id;
+        $playlist->url = $url;
         array_push($playlists, json_encode($playlist));
       }
-      return $playlists;
+      return $channel_playlists;
     } catch (Exception $e) {
       echo 'Message: ' . $e->getMessage();
     }
