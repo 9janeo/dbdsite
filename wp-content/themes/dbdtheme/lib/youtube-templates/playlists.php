@@ -6,18 +6,13 @@
  */
 $playlist = $args;
 $id = $playlist->id;
+$playlistUrl = $playlist->url;
 $etag = $playlist->etag;
 $title = $playlist->snippet->title;
 $description = $playlist->snippet->description;
 $thumbnails = $playlist->snippet->thumbnails;
 $itemCount =  $playlist->contentDetails->itemCount;
-// $videos = $args['videos'];
-if (isset($videos->{0})) {
-  $indexVid = $videos->{0}->snippet->resourceId->videoId;
-  $playlistUrl = 'https://www.youtube.com/watch?v=' . $indexVid . '&list=' . $id;
-}
-// https://www.youtube.com/watch?v=DyOm5BX2GZk&list=PLgHIZMXekZto-3q1_Gb6HwE9fzfy3zF9g&ab_channel=DISBYDEM
-
+// e.g https://www.youtube.com/watch?v=DyOm5BX2GZk&list=PLgHIZMXekZto-3q1_Gb6HwE9fzfy3zF9g&ab_channel=DISBYDEM
 ?>
 
 <div class="card-header">

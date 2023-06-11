@@ -10,8 +10,8 @@ $video_list = $args;
         <div class="d-flex w-100 justify-content-between">
           <small class="video-title text-bold mb-1"><?php echo $video->snippet->title; ?></small>
         </div>
-        <span class="icon play mx-1"><i class="fa fa-solid fa-play"></i><?php echo  $video->snippet->views; ?></span>
-        <span class="icon like mx-1"><i class="fa fa-thin fa-thumbs-up"></i> <?php echo  $video->snippet->views; ?></span>
+        <span class="icon play mx-1"><i class="fa fa-solid fa-play"></i><?php echo ">"; ?></span>
+        <span class="icon like mx-1"><i class="fa fa-thin fa-thumbs-up"></i> <?php echo "3^"; ?></span>
       </li>
     <?php endforeach;
   else : ?>

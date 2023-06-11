@@ -75,6 +75,7 @@ class Dbd_Youtube
    * Returns the videos for a channel
    * @param  mixed  $service      [Youtube service]
    * @return mixed  $channel  [The channel object we want]
+   * @return int  $maxResults  [The maximum number of results to return]
    */
   public static function get_channel_videos($channel, $maxResults = 25)
   {
@@ -131,13 +132,11 @@ class Dbd_Youtube
           // skip playlist if no items in it
           continue;
         }
-        array_push($playlists,json_encode($playlist));
+        array_push($playlists, json_encode($playlist));
       }
       return $playlists;
-    }
-
-    catch(Exception $e) {
-      echo 'Message: ' .$e->getMessage();
+    } catch (Exception $e) {
+      echo 'Message: ' . $e->getMessage();
     }
   }
 
@@ -156,8 +155,7 @@ class Dbd_Youtube
     try {
       $playlist_items = self::$service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
       return $playlist_items;
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       write_log('Error getting Playlist Items for playlist - ' . $playlist_id);
       return false;
     }
@@ -186,25 +184,45 @@ class Dbd_Youtube
           // skip playlist if no items in it
           continue;
         }
-        $public = array ();
+        $public = array();
         // count playlist items that are public
-        foreach($items as $item){
+        foreach ($items as $item) {
           if (($item->status->privacyStatus == 'private')) {
             continue;
           }
           array_push($public, $item);
         }
-        if(!(count($public) > 0) ){
+        if (!(count($public) > 0)) {
           // skip playlist if there are no public videos
           continue;
         }
         $playlist->items = $public;
-        array_push($playlists,$playlist);
+        $url = self::get_resource_url($playlist, 'playlist', $id);
+        $playlist->url = $url;
+        print_r($playlist->url);
+        print_r("<br>");
+        array_push($playlists, $playlist);
       }
       return $playlists;
+    } catch (Exception $e) {
+      echo 'Message: ' . $e->getMessage();
     }
-    catch(Exception $e) {
-      echo 'Message: ' .$e->getMessage();
-    }
+  }
+
+  /**
+   * Builds a url for the YouTube resource
+   * @param object $resource [accepts the resource]
+   * @param string $type [accepts the resource type]
+   * @param string $id  [accepts the resource id]
+   */
+  public static function get_resource_url($resource, $type, $id)
+  {
+    if ($type == 'playlist') :
+      if (isset($resource->items[0])) {
+        $indexVid = $resource->items[0]->snippet->resourceId->videoId;
+        $playlistUrl = 'https://www.youtube.com/watch?v=' . $indexVid . '&list=' . $id;
+      }
+      return $playlistUrl;
+    endif;
   }
 }
