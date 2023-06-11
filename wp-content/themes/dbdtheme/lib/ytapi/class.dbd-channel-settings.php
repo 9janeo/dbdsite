@@ -30,11 +30,20 @@ class DBD_Channels
     return $is_error;
   }
 
-  public static function get_dbd_channels()
+  /**
+   * Returns registed channels
+   * Accepts platforn name as a filter
+   * @param string $platform [filters the results to only channels on the provided platform]
+   */
+  public static function get_dbd_channels($platform = null)
   {
     global $wpdb;
     $table_name = $wpdb->prefix . 'channels';
-    $channels = $wpdb->get_results("SELECT * FROM {$table_name}");
+    if (isset($platform) && !empty($platform)) :
+      $channels = $wpdb->get_results("SELECT * FROM {$table_name} WHERE platform = '{$platform}'");
+    else :
+      $channels = $wpdb->get_results("SELECT * FROM {$table_name}");
+    endif;
     return $channels;
   }
 
