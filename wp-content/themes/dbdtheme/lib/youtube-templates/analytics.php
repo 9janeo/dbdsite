@@ -18,16 +18,18 @@ if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
         <div class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#<?= $channel->channel_username ?>" aria-expanded="false" aria-controls="<?= $channel->channel_username ?>">
           <div class="col-6">
             <h4><?= $channel->channel_name ?></h4>
-            <span class="small"><?= $channel->id . ' || ' . $channel->platform .' || '. $channel->channel_url ?></span>
+            <span class="small"><?= $channel->id . ' || ' . $channel->platform . ' || ' . $channel->channel_url ?></span>
           </div>
         </div>
       </div>
-      
+
       <div id="<?= $channel->channel_username ?>" class="p-3 accordion-collapse collapse">
         <p class="mb-0">Display the videos for this channel</p>
         <?php
         if ($channel->platform == 'youtube') {
           $channel_id = $channel->channel_id;
+          // $channel_vids = Dbd_Youtube::get_channel_videos($channel, 3);
+          // get_template_part('lib/youtube-templates/video_list', 'video_list', $channel_vids->items); 
         ?>
           <h4>Playlists</h4>
         <?php
@@ -42,5 +44,5 @@ if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
     </div>
   <?php
   }
-?>
+  ?>
 </div>
