@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template for displaying posts on the author archive
  *
@@ -6,42 +7,42 @@
  */
 
 // Exit if accessed directly.
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 ?>
 
 <article <?php post_class(); ?> id="post-<?php the_ID(); ?>">
 
-	<header class="entry-header">
+  <header class="entry-header">
 
-		<?php
-		the_title(
-			sprintf( '<h3 class="entry-title"><a href="%s" rel="bookmark">', esc_url( get_permalink() ) ),
-			'</a></h3>'
-		);
-		?>
+    <?php
+    the_title(
+      sprintf('<h3 class="entry-title"><a href="%s" rel="bookmark">', esc_url(get_permalink())),
+      '</a></h3>'
+    );
+    ?>
 
-		<?php if ( 'post' === get_post_type() ) : ?>
+    <?php if ('post' === get_post_type()) : ?>
 
-			<div class="entry-meta">
+      <div class="entry-meta">
 
-				<?php understrap_posted_on(); ?>
+        <?php understrap_posted_on(); ?>
 
-			</div><!-- .entry-meta -->
+      </div><!-- .entry-meta -->
 
-		<?php endif; ?>
+    <?php endif; ?>
 
-	</header><!-- .entry-header -->
+  </header><!-- .entry-header -->
 
-	<div class="entry-summary">
+  <div class="entry-summary">
 
-		<?php the_excerpt(); ?>
+    <?php the_excerpt(); ?>
 
-	</div><!-- .entry-summary -->
+  </div><!-- .entry-summary -->
 
-	<footer class="entry-footer">
+  <footer class="entry-footer">
 
-		<?php understrap_entry_footer(); ?>
+    <?php understrap_entry_footer(); ?>
 
-	</footer><!-- .entry-footer -->
+  </footer><!-- .entry-footer -->
 
 </article><!-- #post-## -->

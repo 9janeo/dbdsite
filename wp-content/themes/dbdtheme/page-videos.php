@@ -85,9 +85,9 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
       <div id="playlist-section" class="yt playlists collapse">
         <?php
         $channels = DBD_Channels::get_dbd_channels('youtube');
-        $playlists = Dbd_Youtube::get_playlists($channels[0]->channel_id);
+        $playlists = Dbd_Youtube::get_playlists_with_items($channels[0]->channel_id);
         if (isset($playlists) && $playlists) :
-          Dbd_Admin::display_playlists($playlists, false);
+          Dbd_Admin::display_playlists($playlists, true);
         endif;
         ?>
       </div>

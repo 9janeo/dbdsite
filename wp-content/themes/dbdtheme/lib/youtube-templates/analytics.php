@@ -36,6 +36,7 @@ if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
           // Display the video analytics page
           $playlists = Dbd_Youtube::get_playlists_with_items($channel_id);
           if (isset($playlists) && $playlists) :
+            Dbd_Youtube::save_playlists($channel_id, $playlists);
             Dbd_Admin::display_playlists($playlists, true);
           endif;
         }

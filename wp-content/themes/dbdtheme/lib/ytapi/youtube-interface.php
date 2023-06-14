@@ -72,8 +72,9 @@ function load_videos($channel_id, $client, $service)
 
 /**
  * Returns a url based on the source type provided
- * @return string  $resource_id  [The id of the resource]
- * @return string  $source_type  [The type of resource link to be generated]
+ * @param string  $resource_id  [The id of the resource]
+ * @param string  $source_type  [The type of resource link to be generated]
+ * @return string  $source_type  [The generated url for the resource]
  */
 function build_link($id, $type = '')
 {
@@ -85,4 +86,24 @@ function build_link($id, $type = '')
     $link = $base . $id;
   }
   return $link;
+}
+
+
+/**
+ * Creates WP categories from playlist names if not already existing
+ * @param string  $title  [The id of the resource]
+ * @return string  $source_type  [The type of resource link to be generated]
+ */
+function add_to_playlist_category()
+{
+  // get $parent category term "playlist"
+  // if playlists category does not exist, create it
+  // else add $title as sub-category
+  /* 
+    wp_insert_term( 'My New Category', 'product_cat', array(
+        'description' => 'Description for category', // optional
+        'parent' => 0, // optional
+        'slug' => 'my-new-category' // optional
+    ) );
+  */
 }

@@ -155,7 +155,7 @@ class Dbd_Youtube
     $queryParams = [
       'playlistId' => $playlist_id
     ];
-    write_log('Attempt setting Playlist Items transient for playlist - ' . $playlist_id . " as - {$playlist_id}videos");
+    write_log('Attempt setting Playlist Items transient for playlist - ' . $playlist_id . " as - {$playlist_id}_videos");
     $playlist_items = array();
     try {
       $playlist_items = self::$service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
@@ -204,8 +204,6 @@ class Dbd_Youtube
         $playlist->items = $public;
         $url = self::get_resource_url($playlist, 'playlist', $id);
         $playlist->url = $url;
-        print_r($playlist->url);
-        print_r("<br>");
         array_push($playlists, $playlist);
       }
       return $playlists;
@@ -229,5 +227,118 @@ class Dbd_Youtube
       }
       return $playlistUrl;
     endif;
+  }
+
+  static function pull_item_ids($item)
+  {
+    return $item->id;
+  }
+
+  // create playlists table
+  /**
+   * Creates a playlists table in the database
+   * returns a success or error message
+   */
+  public static function create_channel_playlists()
+  {
+    global $wpdb;
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $table_name = $wpdb->prefix . 'playlists';
+
+    $sql = "CREATE TABLE `{$table_name}` (
+      ID int NOT NULL Auto_INCREMENT,
+      channel_id VARCHAR(50),
+      PlaylistId VARCHAR(50),
+      PlaylistName VARCHAR(50),
+      VideoCount INT,
+      VideoList VARCHAR (4000),
+      PlaylistUrl VARCHAR (100),
+      Published DATETIME,
+      Created DATETIME,
+      Updated DATETIME,
+      PRIMARY KEY (id),
+      FOREIGN KEY (channel_id) REFERENCES wp_channels(channel_id),
+      KEY PlaylistId (PlaylistId)
+    ) $charset_collate;";
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta($sql);
+    $is_error = empty($wpdb->last_error);
+
+    return $is_error;
+  }
+
+  // Save playlists
+  /**
+   * Accept a playlist and save them to database
+   * @param string $channel_id [Platform specific channel id playlists belong to]
+   * @param object $playlists [Playlists for the channel to add to the database]
+   * returns a success or error message
+   */
+  public static function save_playlists($channel_id, $playlists)
+  {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'playlists';
+
+    // print_r($wpdb->get_var("SHOW TABLES LIKE %s", $table_name));
+    if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name)) != $table_name) {
+      error_log('Table does not exist' . ': ' . print_r($table_name, true));
+      error_log('Creating ' . print_r($table_name, true) . ' table');
+      self::create_channel_playlists();
+    }
+    error_log('Table exists' . ': ' . print_r($table_name, true));
+
+    foreach ($playlists as $pl) {
+      // $allowed_item_key = ['id'];
+      $filtered_items = array_map('Dbd_Youtube::pull_item_ids', $pl->items);
+      $data_ = array(
+        'channel_id' => $pl->snippet->channelId,
+        'playlistId' => $pl->id,
+        'playlistName' => $pl->snippet->title,
+        'VideoCount' => $pl->contentDetails->itemCount,
+        'videoList' => wp_json_encode((object) $filtered_items), // convert to json
+        'playlistUrl' => $pl->url,
+        'published' => $pl->snippet->publishedAt, //convert string to datetime,
+        'created' => current_time('mysql'), // current datetime,
+        'updated' => current_time('mysql'), // current datetime,
+      );
+      error_log('Table entry ' . ': ' . print_r($data_));
+      $result = $wpdb->insert($table_name, $data_, array('%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s'));
+
+      if (false === $result) {
+        print_r($wpdb->last_error);
+        // wp_die('Failed to add channel');
+      } else {
+        echo "Playlist " . $pl->id . " added to database";
+      }
+    }
+    // $entries = $wpdb->get_results("SELECT * FROM {$table_name} WHERE ChannelId = '{$channel_id}'");
+
+    // if (isset($entries) && !empty($entries)) :
+    //   print_r($entries);
+    // endif;
+  }
+
+  //Pull tags from YT and add them to existing post tags
+  /**
+   * Adds tags to a post
+   * @param $post_id Post to update
+   * @param $video Youtube video from API call
+   * @return bool
+   */
+  public static function update_post_tags($post_id, $video)
+  {
+    $vid_tags = $video->snippet->tags;
+    $post_tags = get_the_tags($post_id);
+    $new_tags = [];
+    foreach ($vid_tags as $key => $tag) {
+      if (!($post_tags) || !in_array($tag, $post_tags)) {
+        $new_tags[] = $tag;
+      }
+    }
+    if (!empty($new_tags)) {
+      wp_set_post_tags($post_id, $new_tags, true);
+    }
   }
 }

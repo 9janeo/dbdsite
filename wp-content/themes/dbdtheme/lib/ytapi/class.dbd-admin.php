@@ -121,10 +121,10 @@ class Dbd_Admin
   }
 
   /**
-  * Displays youtube playlists
-  * @param  array  $playlists  [The feed of playlists to display]
-  * @param bool $listvideo  [Control if video list will be loaded with each playlist displayed]
-  **/
+   * Displays youtube playlists
+   * @param  array  $playlists  [The feed of playlists to display]
+   * @param bool $listvideo  [Control if video list will be loaded with each playlist displayed]
+   **/
   public static function display_playlists($playlists, $listvideo = false)
   {
     if (isset($playlists) && $playlists) :
@@ -154,7 +154,7 @@ class Dbd_Admin
             </div>
           <?php endforeach; ?>
         </div>
-      <?php else :
+<?php else :
         return print_r($playlist->error);
       endif;
     endif;
