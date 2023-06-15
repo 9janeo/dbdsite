@@ -28,15 +28,13 @@ if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
         <?php
         if ($channel->platform == 'youtube') {
           $channel_id = $channel->channel_id;
-          // $channel_vids = Dbd_Youtube::get_channel_videos($channel, 3);
-          // get_template_part('lib/youtube-templates/video_list', 'video_list', $channel_vids->items); 
         ?>
           <h4>Playlists</h4>
         <?php
           // Display the video analytics page
           $playlists = Dbd_Youtube::get_playlists_with_items($channel_id);
           if (isset($playlists) && $playlists) :
-            Dbd_Youtube::save_playlists($channel_id, $playlists);
+            Dbd_Youtube::save_playlists($playlists);
             Dbd_Admin::display_playlists($playlists, true);
           endif;
         }
