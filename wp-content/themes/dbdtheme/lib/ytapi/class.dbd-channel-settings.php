@@ -417,8 +417,8 @@ class DBD_Channels
   public static function edit_dbd_channel()
   {
     if (isset($_POST['edit_dbd_channel'])) {
-      write_log("Attempting to validate update dbd_channel \n");
-      write_log($_POST);
+      // write_log("Attempting to validate update dbd_channel \n");
+      // write_log($_POST);
       DBD_Channels::dbd_callback_validate_channel($_POST['edit_dbd_channel']);
 
       if (!empty($_POST['errors'])) {
@@ -432,7 +432,6 @@ class DBD_Channels
         // Get corresponding id row from table| check against new data
         $id = $_POST['id'];
         $data_ = array(
-          'id' => $_POST['id'],
           'channel_name' => $_POST['channel_name'],
           'platform' => $_POST['platform'],
           'channel_username' => $_POST['channel_username'],
@@ -450,7 +449,7 @@ class DBD_Channels
         // }
         $where = array('id' => $id); // NULL value in WHERE clause.
 
-        $updated = $wpdb->update($table_name, $data_, $where, array('%d', '%s', '%s', '%s', '%s', '%s'), array('%d'));
+        $updated = $wpdb->update($table_name, $data_, $where, array('%s', '%s', '%s', '%s', '%s'), array('%d'));
         // $result = $wpdb->update($table_name, $data_, array('%s', '%s', '%s', '%s', '%s'));
 
         if (false === $updated) {

@@ -153,9 +153,10 @@ class Dbd_Youtube
   public static function get_playlist_items($playlist_id)
   {
     $queryParams = [
-      'playlistId' => $playlist_id
+      'playlistId' => $playlist_id,
+      'maxResults' => 50
     ];
-    write_log('Attempt setting Playlist Items transient for playlist - ' . $playlist_id . " as - {$playlist_id}_videos");
+    // write_log('Attempt setting Playlist Items transient for playlist - ' . $playlist_id . " as - {$playlist_id}_videos");
     $playlist_items = array();
     try {
       $playlist_items = self::$service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
@@ -205,6 +206,8 @@ class Dbd_Youtube
         $url = self::get_resource_url($playlist, 'playlist', $id);
         $playlist->url = $url;
         array_push($playlists, $playlist);
+        // $filtered_items = array_map('Dbd_Youtube::pull_item_ids', $playlist->items);
+        // error_log("Inside [get_playlists_with_items] " . wp_json_encode((object) $filtered_items));
       }
       return $playlists;
     } catch (Exception $e) {
@@ -248,18 +251,18 @@ class Dbd_Youtube
 
     $sql = "CREATE TABLE `{$table_name}` (
       ID int NOT NULL Auto_INCREMENT,
-      channel_id VARCHAR(50),
       PlaylistId VARCHAR(50),
       PlaylistName VARCHAR(50),
       VideoCount INT,
       VideoList VARCHAR (4000),
       PlaylistUrl VARCHAR (100),
+      channel_id VARCHAR(50),
       Published DATETIME,
       Created DATETIME,
       Updated DATETIME,
       PRIMARY KEY (id),
-      FOREIGN KEY (channel_id) REFERENCES wp_channels(channel_id),
-      KEY PlaylistId (PlaylistId)
+      UNIQUE KEY (PlaylistId),
+      FOREIGN KEY (channel_id) REFERENCES wp_channels(channel_id)
     ) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -272,19 +275,17 @@ class Dbd_Youtube
   // Save playlists
   /**
    * Accept a playlist and save them to database
-   * @param string $channel_id [Platform specific channel id playlists belong to]
    * @param object $playlists [Playlists for the channel to add to the database]
    * returns a success or error message
    */
-  public static function save_playlists($channel_id, $playlists)
+  public static function save_playlists($playlists)
   {
     global $wpdb;
     $table_name = $wpdb->prefix . 'playlists';
 
-    // print_r($wpdb->get_var("SHOW TABLES LIKE %s", $table_name));
     if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name)) != $table_name) {
       error_log('Table does not exist' . ': ' . print_r($table_name, true));
-      error_log('Creating ' . print_r($table_name, true) . ' table');
+      error_log('Create ' . print_r($table_name, true) . ' table');
       self::create_channel_playlists();
     }
     error_log('Table exists' . ': ' . print_r($table_name, true));
@@ -293,31 +294,68 @@ class Dbd_Youtube
       // $allowed_item_key = ['id'];
       $filtered_items = array_map('Dbd_Youtube::pull_item_ids', $pl->items);
       $data_ = array(
-        'channel_id' => $pl->snippet->channelId,
-        'playlistId' => $pl->id,
-        'playlistName' => $pl->snippet->title,
+        'PlaylistId' => $pl->id,
+        'PlaylistName' => $pl->snippet->title,
         'VideoCount' => $pl->contentDetails->itemCount,
-        'videoList' => wp_json_encode((object) $filtered_items), // convert to json
-        'playlistUrl' => $pl->url,
-        'published' => $pl->snippet->publishedAt, //convert string to datetime,
-        'created' => current_time('mysql'), // current datetime,
-        'updated' => current_time('mysql'), // current datetime,
+        'VideoList' => wp_json_encode((object) $filtered_items),
+        'PlaylistUrl' => $pl->url,
+        'channel_id' => $pl->snippet->channelId,
+        'Published' => date("Y-m-d H:i:s", strtotime($pl->snippet->publishedAt)),
+        'Created' => current_time('Y-m-d\TH:i:s.u\Z', 1), // current datetime,
+        'Updated' => null
       );
-      error_log('Table entry ' . ': ' . print_r($data_));
-      $result = $wpdb->insert($table_name, $data_, array('%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s'));
 
-      if (false === $result) {
-        print_r($wpdb->last_error);
-        // wp_die('Failed to add channel');
+      $exists = $wpdb->get_var("SELECT `ID` FROM {$table_name} WHERE `playlistId` = '{$pl->id}'");
+
+      if ($exists == NULL) {
+        $result = $wpdb->insert($table_name, $data_, array('%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s'));
+        if (false === $result) {
+          print_r($wpdb->last_error);
+          // wp_die('Failed to add playlist');
+        } else {
+          echo "Playlist " . $pl->id . " added to database";
+        }
       } else {
-        echo "Playlist " . $pl->id . " added to database";
+        // update with new values in $data_
+        self::update_playlist($exists, $data_);
       }
     }
-    // $entries = $wpdb->get_results("SELECT * FROM {$table_name} WHERE ChannelId = '{$channel_id}'");
+  }
 
-    // if (isset($entries) && !empty($entries)) :
-    //   print_r($entries);
-    // endif;
+  /**
+   * Update a playlist
+   * @param int $id [The id (primary key) of the existing playlist record in the database]
+   * @param array $playlist [The new playlist information to compare with existing record]
+   */
+  public static function update_playlist($id, $playlist)
+  {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'playlists';
+    // Set playlist updated to current datetime
+    $playlist['Updated'] = current_time('Y-m-d H:i:s', 1);
+    // Fetch existing playlist db row usint Id
+    $check = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name} WHERE `ID`='%d'", $id));
+
+    $where = array('id' => $id);
+    $updateCols = array();
+    // Compare db entry and current $playlist
+    foreach ($playlist as $col => $newVal) {
+      // if the same exit
+      if (($check->{$col} != $newVal) && ($col != "Created")) {
+        // if different, add column to update fields
+        $updateCols[$col] = $newVal;
+      }
+    }
+
+    $update = $wpdb->update($table_name, $updateCols, $where, array('%s', '%s', '%s', '%s', '%s'), array('%d'));
+    if (false === $update) {
+      write_log($wpdb->last_error);
+      print_r($wpdb->last_error);
+      // wp_die('Failed to add channel');
+    } else {
+      $affected = json_encode(array_keys($updateCols));
+      write_log("Channel " . $check->PlaylistName . " $affected " . " fields updated <br>\n");
+    }
   }
 
   //Pull tags from YT and add them to existing post tags
