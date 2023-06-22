@@ -252,8 +252,10 @@ class Dbd_Youtube
     $sql = "CREATE TABLE `{$table_name}` (
       ID int NOT NULL Auto_INCREMENT,
       PlaylistId VARCHAR(50),
-      PlaylistName VARCHAR(50),
-      VideoCount INT,
+      Title VARCHAR(50),
+      ItemCount INT,
+      Details VARCHAR(50),
+      Thumbnail  VARCHAR (100),
       VideoList VARCHAR (4000),
       PlaylistUrl VARCHAR (100),
       channel_id VARCHAR(50),
@@ -292,11 +294,21 @@ class Dbd_Youtube
 
     foreach ($playlists as $pl) {
       // $allowed_item_key = ['id'];
+      /* 
+        $playlistUrl = $playlist->url;
+        $etag = $playlist->etag;
+        $title = $playlist->snippet->title;
+        $description = $playlist->snippet->description;
+        $thumbnails = $playlist->snippet->thumbnails;
+        $itemCount =  $playlist->contentDetails->itemCount; 
+      */
       $filtered_items = array_map('Dbd_Youtube::pull_item_ids', $pl->items);
       $data_ = array(
         'PlaylistId' => $pl->id,
-        'PlaylistName' => $pl->snippet->title,
-        'VideoCount' => $pl->contentDetails->itemCount,
+        'Title' => $pl->snippet->title,
+        'ItemCount' => $pl->contentDetails->itemCount,
+        'Details' => $pl->snippet->description,
+        'Thumbnail' => $pl->snippet->thumbnails,
         'VideoList' => wp_json_encode((object) $filtered_items),
         'PlaylistUrl' => $pl->url,
         'channel_id' => $pl->snippet->channelId,
@@ -378,5 +390,23 @@ class Dbd_Youtube
     if (!empty($new_tags)) {
       wp_set_post_tags($post_id, $new_tags, true);
     }
+  }
+
+  /**
+   * Returns saved playlists
+   * Accepts channel name as a filter
+   * @param string $channel_id [filters the results to only playlists belonging to the provided channel]
+   */
+  public static function get_dbd_playlists($channel_id = null)
+  {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'playlists';
+    if (isset($channel_id) && !empty($channel_id)) :
+      error_log("Playlists Channel Id requested was: " . $channel_id);
+      $playlists = $wpdb->get_results("SELECT * FROM {$table_name} WHERE channel_id = '{$channel_id}'");
+    else :
+      $playlists = $wpdb->get_results("SELECT * FROM {$table_name}");
+    endif;
+    return $playlists;
   }
 }
