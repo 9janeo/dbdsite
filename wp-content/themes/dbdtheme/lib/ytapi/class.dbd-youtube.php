@@ -13,9 +13,9 @@ class Dbd_Youtube
   const API_KEY = 'AIzaSyAfiysBRyIIHIUsenOXURi2xRTRtWBn2A4';
 
   // initialize class variables
-  private static $initiated = false;
   private static $client = false;
   private static $service = false;
+  private static $initiated = false;
 
   public static function init()
   {
@@ -33,7 +33,7 @@ class Dbd_Youtube
 
     // load client
     self::$client = self::load_client();
-    self::$service = self::service();
+    self::$service = self::load_service();
     // set up client scopes
     // set client Access type
     // load client service account credentials from json
@@ -65,10 +65,11 @@ class Dbd_Youtube
   /**
    * Initializes YouTube service
    */
-  public static function service()
+  public static function load_service()
   {
     // Define service object for making API requests.
-    return new Google\Service\YouTube(self::$client);
+    $service = new Google\Service\YouTube(self::$client);
+    return $service;
   }
 
   /**
@@ -195,6 +196,46 @@ class Dbd_Youtube
     write_log("Channel " . $check->Title . " $affected" . " fields updated <br>\n");
   }
 
+  // Playlist Videos ***********************
+  /**
+   * Create YouTube post from playlist item
+   * @param object $item [Playlist item/video from API call]
+   * @return bool $result [Returns True if successful and Fail otherwise]
+   */
+  public static function save_video_as_youtube_post($item)
+  {
+
+    // prep the video for wp_posts custom post type
+    $title = $item->snippet->title;
+    $content = $item->snippet->description;
+    // Meta
+    // $category = self::get_playlists_column_value($item->snippet->playlistId, 'Title');
+    // $categor = $item->snippet->playlistId; //Get playlist name
+
+    $yt_post = array(
+      'post_type' => 'youtube-post',
+      'post_title' => $title,
+      'post_content' => $content,
+      'post_status' => 'draft',
+      'comment_status' => 'closed',
+      'ping_status' => 'open'
+    );
+    // error_log("To be saved: " . json_encode($yt_post));
+
+    // $yt_post_id = wp_insert_post(array(
+    //   'post_type' => 'youtube-post',
+    //   'post_title' => $title,
+    //   'post_content' => $content,
+    //   'post_status' => 'draft',
+    //   'comment_status' => 'closed',
+    //   'ping_status' => 'open'
+
+    // ));
+    // if $yt_post_id update meta tags, categories(playlist title)
+    return print_r("No videos saved");
+  }
+
+
   /**
    * Returns the videos for a channel
    * @param  mixed  $service      [Youtube service]
@@ -271,7 +312,7 @@ class Dbd_Youtube
 
   /**
    * Accepts a playlist id and returns the items in the playlist
-   * @param  mixed  $service      [Youtube service]
+   * @var  object  $service      [Youtube service]
    * @return mixed  $playlist_id  [The id of the playlist we want]
    */
   public static function get_playlist_items($playlist_id)
@@ -309,6 +350,7 @@ class Dbd_Youtube
       // set_transient('channel_playlists', $channel_playlists, DAY_IN_SECONDS);
       foreach ($channel_playlists->items as $index => $playlist) {
         $id = $playlist->id;
+        // save playlist title as categories
         // get the corresponding playlist items
         $items = self::get_playlist_items($playlist->id)->items;
         if (!($playlist->contentDetails->itemCount > 0)) {
@@ -322,6 +364,7 @@ class Dbd_Youtube
             continue;
           }
           array_push($public, $item);
+          self::save_video_as_youtube_post($item);
         }
         if (!(count($public) > 0)) {
           // skip playlist if there are no public videos
@@ -332,9 +375,15 @@ class Dbd_Youtube
         $url = self::get_resource_url($playlist, 'playlist', $id);
         $playlist->url = $url;
         array_push($playlists, $playlist);
-        // $filtered_items = array_map('Dbd_Youtube::pull_item_ids', $playlist->items);
-        // error_log("Inside [get_playlists_with_items] " . wp_json_encode((object) $filtered_items));
       }
+      $titles = array_map(function ($playlist) {
+        return $playlist->snippet->title;
+      }, $playlists);
+      error_log("Inside [get_playlists_with_items] extract titles: " . wp_json_encode($titles));
+      // Send playlist titles to WP categories
+      $categories = Dbd_Youtube::create_category_from_title($titles);
+      error_log("Categories saved: " . json_encode($categories));
+
       return $playlists;
     } catch (Exception $e) {
       echo 'Message: ' . $e->getMessage();
@@ -385,6 +434,31 @@ class Dbd_Youtube
   }
 
   /**
+   * Create categories with playlist name
+   * @param array $titles [Gets the value from the row with the playlist ID]
+   * 
+   */
+  public static function create_category_from_title($titles)
+  {
+    $created = array();
+    foreach ($titles as $cat) {
+      $catarray = array(
+        'taxonomy'  => 'category',
+        'cat_name'  => $cat,
+        'category_description' => '',
+        'category_nicename'    => sanitize_title($cat),
+        'category_parent'      => ''
+      );
+      error_log("Catarray: " . json_encode($catarray) . " type: " . gettype($catarray) . " \n");
+      $id = wp_insert_category($catarray);
+      if ($id !== 0) {
+        array_push($created, $id);
+      }
+    }
+    error_log("Categories created/updated: " . json_encode($created) . " \n");
+  }
+
+  /**
    * Returns saved playlists
    * @param string $channel_id [filters the results to only playlists belonging to the provided channel]
    */
@@ -399,5 +473,23 @@ class Dbd_Youtube
       $playlists = $wpdb->get_results("SELECT * FROM {$table_name}");
     endif;
     return $playlists;
+  }
+
+  /**
+   * Returns saved playlist column value
+   * @param string $PlaylistId [Gets the value from the row with the playlist ID]
+   * @param string $column_name [filters the results to only value corresponding to the provided column]
+   */
+  public static function get_playlists_column_value($PlaylistId, $column_name = null)
+  {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'playlists';
+    if (isset($column_name) && !empty($column_name)) :
+      $value = $wpdb->get_results("SELECT {$column_name} FROM {$table_name} WHERE PlaylistId = '{$PlaylistId}'");
+    else :
+      $value = $wpdb->get_results("SELECT * FROM {$table_name} WHERE PlaylistId = '{$PlaylistId}'");
+    endif;
+    error_log("Requested " . $column_name . " value returned is: " . json_encode($value));
+    return $value;
   }
 }

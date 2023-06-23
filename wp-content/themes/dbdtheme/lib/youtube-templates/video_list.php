@@ -7,6 +7,7 @@ $video_list = $args;
   <ul class="list-group videos">
     <?php
     foreach ($video_list as $key => $video) :
+      // var_dump($video);
       $title = $video->snippet ? $video->snippet->title : $video;
     ?>
       <li class="list-group-item d-flex justify-content-between align-items-center video">

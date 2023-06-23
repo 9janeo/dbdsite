@@ -55,7 +55,7 @@ class Dbd_Admin
     echo '<h3>DisByDem Admin: Display start page</h3>';
     if (isset($_GET['action'])) {
       if ($_GET['action'] == 'delete-key') {
-        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], self::NONCE))
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce']))
           delete_option('wordpress_api_key');
       }
     }
@@ -128,11 +128,11 @@ class Dbd_Admin
   public static function display_playlists($playlists, $listvideo = false)
   {
     if (isset($playlists) && $playlists) :
-      if (!isset($playlists->error)) : ?>
+      if (!isset($playlists['error'])) : ?>
         <div class="yt playlists row row-cols-3">
           <?php $videos = (object) array();
           foreach ($playlists as $key => $playlist) :
-            error_log("Displaying for " . json_encode($playlist));
+            // error_log("Displaying for " . json_encode($playlist));
             $id = $playlist->snippet ? $playlist->id : $playlist->PlaylistId;
             $itemCount = $playlist->contentDetails ? $playlist->contentDetails->itemCount : $playlist->VideoList;
             $items = $playlist->items ? $playlist->items : json_decode($playlist->VideoList);
@@ -143,7 +143,6 @@ class Dbd_Admin
               <?php get_template_part('lib/youtube-templates/playlists', 'playlists', $playlist); ?>
               <div class="card-footer py-2">
                 <?php
-                var_dump($items);
                 if ($listvideo == true && isset($items) && $items) :
                   // if listvideo parameter is true get the playlist items
                   $videos = $items;
@@ -159,7 +158,7 @@ class Dbd_Admin
           <?php endforeach; ?>
         </div>
 <?php else :
-        return print_r($playlist->error);
+        return print_r($playlists['error']);
       endif;
     endif;
   }

@@ -185,7 +185,7 @@ class DBD_Channels
     $type = $args['type'];
     $size = $args['size'];
     $value = $args['value'];
-    $platform_options = self::dbd_callback_select_options('platform');
+    $platform_options = DBD_Settings::dbd_callback_select_options('platform');
 
     switch ($type) {
       case 'hidden':
@@ -212,23 +212,6 @@ class DBD_Channels
   public static function dbd_callback_add_channel()
   {
     echo '<p>' . esc_html__('Add the details for this channel, load each channel in settings', 'disbydem') . '</p>';
-  }
-
-  // callback for select options
-  public static function dbd_callback_select_options($options)
-  {
-    $platfom_options = array(
-      'youtube'   => esc_html__('YouTube',  'disbydem'),
-      'tiktok'      => esc_html__('TikTok',    'disbydem'),
-      'instagram'    => esc_html__('Instagram',    'disbydem'),
-      'facebook' => esc_html__('Facebook',  'disbydem'),
-    );
-
-    if ($options == 'custom_styles') {
-      return $style_options;
-    } else {
-      return $platfom_options;
-    }
   }
 
   // callback: new Channel name
@@ -270,7 +253,7 @@ class DBD_Channels
     $id      = isset($args['id']) ? $args['id'] : '';
     $label   = isset($args['label']) ? $args['label'] : '';
     $selected_option = isset($options['platform']) ? sanitize_text_field($options['platform']) : '';
-    $select_options = self::dbd_callback_select_options('platform');
+    $select_options = DBD_Settings::dbd_callback_select_options('platform');
     echo '<select id="' . $id . '" name="' . $id . '">';
     foreach ($select_options as $value => $option) {
       $selected = selected($selected_option === $value, true, false);
@@ -342,7 +325,7 @@ class DBD_Channels
     $error = array();
     $warning = array();
 
-    $platfom_options = self::dbd_callback_select_options('platform');
+    $platfom_options = DBD_Settings::dbd_callback_select_options('platform');
 
     // channel name
     if (isset($input['channel_name'])) {

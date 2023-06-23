@@ -32,9 +32,9 @@ if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
           <h4>Playlists</h4>
         <?php
           // Display the video analytics page
-          // $playlists = Dbd_Youtube::get_playlists_from_yt_with_items($channel_id);
-          $channels = DBD_Channels::get_dbd_channels('youtube');
-          $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
+          $playlists = Dbd_Youtube::get_playlists_from_yt_with_items($channel_id);
+          // $channels = DBD_Channels::get_dbd_channels('youtube');
+          // $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
           if (isset($playlists) && $playlists) :
             // Dbd_Youtube::save_playlists($playlists);
             Dbd_Admin::display_playlists($playlists, true);
