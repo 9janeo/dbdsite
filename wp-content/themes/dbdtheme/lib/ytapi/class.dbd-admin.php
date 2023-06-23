@@ -132,17 +132,21 @@ class Dbd_Admin
         <div class="yt playlists row row-cols-3">
           <?php $videos = (object) array();
           foreach ($playlists as $key => $playlist) :
-            // var_dump($playlist);
-            $id = $playlist->id;
-            if (!($playlist->contentDetails->itemCount > 0)) {
+            error_log("Displaying for " . json_encode($playlist));
+            $id = $playlist->snippet ? $playlist->id : $playlist->PlaylistId;
+            $itemCount = $playlist->contentDetails ? $playlist->contentDetails->itemCount : $playlist->VideoList;
+            $items = $playlist->items ? $playlist->items : json_decode($playlist->VideoList);
+            if (isset($itemCount) && !($itemCount > 0)) {
               continue; # skip playlist if no items in it
             } ?>
             <div class="card pl_<?= $key + 1 ?> mb-3">
               <?php get_template_part('lib/youtube-templates/playlists', 'playlists', $playlist); ?>
               <div class="card-footer py-2">
-                <?php if ($listvideo == true && isset($playlist->items) && $playlist->items) :
+                <?php
+                var_dump($items);
+                if ($listvideo == true && isset($items) && $items) :
                   // if listvideo parameter is true get the playlist items
-                  $videos = $playlist->items;
+                  $videos = $items;
                 ?>
                   <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-target="#list_<?php echo $id; ?>" data-bs-target="#list_<?php echo $id; ?>" aria-expanded="false" aria-controls="collapseVideoList">Toggle list
                   </button>

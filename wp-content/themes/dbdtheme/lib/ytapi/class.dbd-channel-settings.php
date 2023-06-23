@@ -32,7 +32,7 @@ class DBD_Channels
 
   /**
    * Returns registed channels
-   * Accepts platforn name as a filter
+   * Accepts platform name as a filter
    * @param string $platform [filters the results to only channels on the provided platform]
    */
   public static function get_dbd_channels($platform = null)
@@ -417,8 +417,6 @@ class DBD_Channels
   public static function edit_dbd_channel()
   {
     if (isset($_POST['edit_dbd_channel'])) {
-      // write_log("Attempting to validate update dbd_channel \n");
-      // write_log($_POST);
       DBD_Channels::dbd_callback_validate_channel($_POST['edit_dbd_channel']);
 
       if (!empty($_POST['errors'])) {
@@ -438,29 +436,18 @@ class DBD_Channels
           'channel_id' => $_POST['channel_id'],
           'channel_url'  => $_POST['channel_url'],
         );
-        // check that channel with the different id and same channel_id||channel_name does not exist
 
-        // $updated = $wpdb->update( $table, $data, $where );
-
-        // if ( false === $updated ) {
-        //     // There was an error.
-        // } else {
-        //     // No error. You can check updated to see how many rows were changed.
-        // }
-        $where = array('id' => $id); // NULL value in WHERE clause.
+        $where = array('id' => $id);
 
         $updated = $wpdb->update($table_name, $data_, $where, array('%s', '%s', '%s', '%s', '%s'), array('%d'));
-        // $result = $wpdb->update($table_name, $data_, array('%s', '%s', '%s', '%s', '%s'));
 
         if (false === $updated) {
           write_log($wpdb->last_error);
-          print_r($wpdb->last_error);
           // wp_die('Failed to add channel');
         } else {
           echo "Channel updated";
           // reload form
         }
-        // return print_r($_POST['errors']);
       }
     }
   }

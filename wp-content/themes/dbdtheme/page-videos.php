@@ -31,7 +31,7 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
     <div class="row">
       <h2 class="header" data-bs-toggle="collapse" data-bs-target="#transients" aria-expanded="true" aria-controls="collapseTransients">Transients</h2>
       <hr>
-      <div id="transients" class="row collapse show">
+      <div id="transients" class="row collapse">
         <?php
         $channel_playlists = get_transient('channel_playlists');
         // var_dump($channel_playlists);
@@ -82,10 +82,11 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
     <div class="row">
       <h2 class="header" data-bs-toggle="collapse" data-bs-target="#playlist-section" aria-expanded="false" aria-controls="collapsePlayist">Playlists</h2>
       <hr>
-      <div id="playlist-section" class="yt playlists collapse">
+      <div id="playlist-section" class="yt playlists collapse show">
         <?php
         $channels = DBD_Channels::get_dbd_channels('youtube');
-        $playlists = Dbd_Youtube::get_playlists_with_items($channels[0]->channel_id);
+        // $playlists = Dbd_Youtube::get_playlists_with_items($channels[0]->channel_id);
+        $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
         if (isset($playlists) && $playlists) :
           Dbd_Admin::display_playlists($playlists, true);
         endif;
