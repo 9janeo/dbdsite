@@ -326,9 +326,11 @@ class Dbd_Youtube
     try {
       $playlist_items = self::$service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
       // Dbd_Youtube::save_playlist_videos($playlist_items);
+      // Dbd_Youtube::save_video_as_youtube_post($playlist_items);
       return $playlist_items;
     } catch (Exception $e) {
       write_log('Error getting Playlist Items for playlist - ' . $playlist_id);
+      echo 'Message: ' . $e->getMessage();
       return false;
     }
   }
@@ -347,18 +349,23 @@ class Dbd_Youtube
     try {
       $channel_playlists = self::$service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
       $playlists = array();
-      // set_transient('channel_playlists', $channel_playlists, DAY_IN_SECONDS);
-      foreach ($channel_playlists->items as $index => $playlist) {
+      foreach ($channel_playlists->items as $playlist) {
         $id = $playlist->id;
-        // save playlist title as categories
+        $title = $playlist->snippet->title;
+
+        // save or update playlist title as a category
+        Dbd_Youtube::create_category_from_title($title);
+        array_push($playlists, $playlist);
+
         // get the corresponding playlist items
         $items = self::get_playlist_items($playlist->id)->items;
         if (!($playlist->contentDetails->itemCount > 0)) {
           // skip playlist if no items in it
           continue;
         }
+
         $public = array();
-        // count playlist items that are public
+        // add qualifying playlist items to public
         foreach ($items as $item) {
           if (($item->status->privacyStatus == 'private')) {
             continue;
@@ -371,18 +378,9 @@ class Dbd_Youtube
           continue;
         }
         $playlist->items = $public;
-        // Dbd_Youtube::save_playlist_videos($public);
         $url = self::get_resource_url($playlist, 'playlist', $id);
         $playlist->url = $url;
-        array_push($playlists, $playlist);
       }
-      $titles = array_map(function ($playlist) {
-        return $playlist->snippet->title;
-      }, $playlists);
-      error_log("Inside [get_playlists_with_items] extract titles: " . wp_json_encode($titles));
-      // Send playlist titles to WP categories
-      $categories = Dbd_Youtube::create_category_from_title($titles);
-      error_log("Categories saved: " . json_encode($categories));
 
       return $playlists;
     } catch (Exception $e) {
@@ -434,28 +432,25 @@ class Dbd_Youtube
   }
 
   /**
-   * Create categories with playlist name
-   * @param array $titles [Gets the value from the row with the playlist ID]
+   * Create a category using the playlist title
+   * @param array $title [accepts the title of the playlist]
+   * Returns category id of saved/updated playlist category
    * 
    */
-  public static function create_category_from_title($titles)
+  public static function create_category_from_title($title)
   {
-    $created = array();
-    foreach ($titles as $cat) {
-      $catarray = array(
-        'taxonomy'  => 'category',
-        'cat_name'  => $cat,
-        'category_description' => '',
-        'category_nicename'    => sanitize_title($cat),
-        'category_parent'      => ''
-      );
-      error_log("Catarray: " . json_encode($catarray) . " type: " . gettype($catarray) . " \n");
-      $id = wp_insert_category($catarray);
-      if ($id !== 0) {
-        array_push($created, $id);
-      }
+    $catarr = array(
+      'taxonomy'  => 'category',
+      'cat_name'  => $title,
+      'category_description' => '',
+      'category_nicename'    => sanitize_title($title),
+      'category_parent'      => ''
+    );
+    $id = wp_insert_category($catarr);
+    if ($id !== 0) {
+      error_log("Playlist {$title} saved or updated as category ID " . $id);
+      return $id;
     }
-    error_log("Categories created/updated: " . json_encode($created) . " \n");
   }
 
   /**
