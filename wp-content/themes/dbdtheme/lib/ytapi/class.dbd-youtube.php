@@ -200,39 +200,57 @@ class Dbd_Youtube
   /**
    * Create YouTube post from playlist item
    * @param object $item [Playlist item/video from API call]
+   * @param object $plTitle [Playlist title from which item was retrieved]
    * @return bool $result [Returns True if successful and Fail otherwise]
    */
-  public static function save_video_as_youtube_post($item)
+  public static function save_video_as_youtube_post($item, $plTitle)
   {
 
     // prep the video for wp_posts custom post type
+    // $kind = $item->kind; // youtube#playlistItem
     $title = $item->snippet->title;
     $content = $item->snippet->description;
+    $date = $item->snippet->publishedAt;
+    $videoID = $item->contentDetails->videoId;
+    $cat_id = get_cat_ID($plTitle);
+    $videoLink = "https://www.youtube.com/watch?v={$videoID}&amp;ab_channel=DISBYDEM";
     // Meta
     // $category = self::get_playlists_column_value($item->snippet->playlistId, 'Title');
     // $categor = $item->snippet->playlistId; //Get playlist name
 
+    $embedBlock = "<!-- wp:embed {\"url\":\"{$videoLink}\",\"type\":\"video\",\"providerNameSlug\":\"youtube\",\"responsive\":true,\"className\":\"wp-embed-aspect-16-9 wp-has-aspect-ratio\"} --><figure class=\"wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio\"><div class=\"wp-block-embed__wrapper\">{$videoLink}</div></figure><!-- /wp:embed -->";
+
+    $content = $embedBlock . $content;
+
+    // check if post exists
+    $post_id = post_exists($title);
+
     $yt_post = array(
+      'ID'        => $post_id,
       'post_type' => 'youtube-post',
       'post_title' => $title,
       'post_content' => $content,
+      'post_date'    => $date,
+      'post_category' => array($cat_id),
       'post_status' => 'draft',
       'comment_status' => 'closed',
       'ping_status' => 'open'
     );
+    if ($post_id !== 0) {
+      // update post with any new changes
+      // error_log("Exists already YT post_id is: " . json_encode($item) . "\n");
+      $update = wp_update_post($yt_post);
+      error_log("Updated status - {$update} \npost content is: " . json_encode($content) . "\n");
+    } else {
+      // error_log("the YT item is: " . json_encode($item) . "\n");
+      error_log("the video to save as cpt is: " . json_encode($yt_post) . "\n\n");
+      $post_id = wp_insert_post($yt_post);
+      error_log("New post created post_id is: " . json_encode($post_id) . "\n");
+    }
     // error_log("To be saved: " . json_encode($yt_post));
 
-    // $yt_post_id = wp_insert_post(array(
-    //   'post_type' => 'youtube-post',
-    //   'post_title' => $title,
-    //   'post_content' => $content,
-    //   'post_status' => 'draft',
-    //   'comment_status' => 'closed',
-    //   'ping_status' => 'open'
-
-    // ));
     // if $yt_post_id update meta tags, categories(playlist title)
-    return print_r("No videos saved");
+    // return print_r("No videos saved");
   }
 
 
@@ -321,12 +339,9 @@ class Dbd_Youtube
       'playlistId' => $playlist_id,
       'maxResults' => 50
     ];
-    // write_log('Attempt setting Playlist Items transient for playlist - ' . $playlist_id . " as - {$playlist_id}_videos");
     $playlist_items = array();
     try {
       $playlist_items = self::$service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
-      // Dbd_Youtube::save_playlist_videos($playlist_items);
-      // Dbd_Youtube::save_video_as_youtube_post($playlist_items);
       return $playlist_items;
     } catch (Exception $e) {
       write_log('Error getting Playlist Items for playlist - ' . $playlist_id);
@@ -366,12 +381,14 @@ class Dbd_Youtube
 
         $public = array();
         // add qualifying playlist items to public
-        foreach ($items as $item) {
+        foreach ($items as $index => $item) {
           if (($item->status->privacyStatus == 'private')) {
             continue;
           }
           array_push($public, $item);
-          self::save_video_as_youtube_post($item);
+          if ($index == 0) {
+            self::save_video_as_youtube_post($item, $title);
+          }
         }
         if (!(count($public) > 0)) {
           // skip playlist if there are no public videos

@@ -4,12 +4,13 @@
  * Single playlist partial template
  */
 $playlist = $args;
-$id = $playlist->id ? $playlist->id : $playlist->PlaylistId;
-$playlistUrl = $playlist->snippet ? $playlist->url : $playlist->PlaylistUrl;
-$title = $playlist->snippet ? $playlist->snippet->title : $playlist->Title;
-$description = $playlist->snippet ? $playlist->snippet->description : $playlist->Details;
-$thumbnail = $playlist->snippet ? $playlist->snippet->thumbnails->high->url : $playlist->Thumbnail;
-$itemCount =  $playlist->contentDetails->itemCount;
+$id = isset($playlist->id) ? $playlist->id : $playlist->PlaylistId;
+$fromAPI = isset($playlist->snippet);
+$playlistUrl = $fromAPI ? $playlist->url : $playlist->PlaylistUrl;
+$title = $fromAPI ? $playlist->snippet->title : $playlist->Title;
+$description = $fromAPI ? $playlist->snippet->description : $playlist->Details;
+$thumbnail = $fromAPI ? $playlist->snippet->thumbnails->high->url : $playlist->Thumbnail;
+$itemCount =  $fromAPI ? $playlist->contentDetails->itemCount : $playlist->ItemCount;
 ?>
 
 <div class="card-header <?= $id ?>">

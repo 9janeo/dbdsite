@@ -133,9 +133,9 @@ class Dbd_Admin
           <?php $videos = (object) array();
           foreach ($playlists as $key => $playlist) :
             // error_log("Displaying for " . json_encode($playlist));
-            $id = $playlist->snippet ? $playlist->id : $playlist->PlaylistId;
-            $itemCount = $playlist->contentDetails ? $playlist->contentDetails->itemCount : $playlist->VideoList;
-            $items = $playlist->items ? $playlist->items : json_decode($playlist->VideoList);
+            $id = isset($playlist->snippet) ? $playlist->id : $playlist->PlaylistId;
+            $itemCount = isset($playlist->contentDetails) ? $playlist->contentDetails->itemCount : $playlist->VideoList;
+            $items = isset($playlist->items) ? $playlist->items : json_decode($playlist->VideoList);
             if (isset($itemCount) && !($itemCount > 0)) {
               continue; # skip playlist if no items in it
             } ?>
