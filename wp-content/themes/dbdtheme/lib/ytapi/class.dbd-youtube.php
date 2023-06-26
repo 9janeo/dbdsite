@@ -231,8 +231,8 @@ class Dbd_Youtube
       'post_title' => $title,
       'post_content' => $content,
       'post_date'    => $date,
+      'post_date_gmt'    => get_gmt_from_date($date),
       'post_category' => array($cat_id),
-      'post_status' => 'draft',
       'comment_status' => 'closed',
       'ping_status' => 'open'
     );
