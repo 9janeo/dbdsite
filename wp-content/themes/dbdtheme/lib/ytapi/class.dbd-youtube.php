@@ -201,22 +201,18 @@ class Dbd_Youtube
    * Create YouTube post from playlist item
    * @param object $item [Playlist item/video from API call]
    * @param object $plTitle [Playlist title from which item was retrieved]
-   * @return bool $result [Returns True if successful and Fail otherwise]
+   *
    */
-  public static function save_video_as_youtube_post($item, $plTitle)
+  public static function dbd_save_video_as_youtube_post($item, $plTitle)
   {
-
     // prep the video for wp_posts custom post type
-    // $kind = $item->kind; // youtube#playlistItem
-    $title = $item->snippet->title;
-    $content = $item->snippet->description;
-    $date = $item->snippet->publishedAt;
+    $snippet = $item->snippet;
+    $title = $snippet->title;
+    $content = $snippet->description;
+    $date = $snippet->publishedAt;
     $videoID = $item->contentDetails->videoId;
     $cat_id = get_cat_ID($plTitle);
-    $videoLink = "https://www.youtube.com/watch?v={$videoID}&amp;ab_channel=DISBYDEM";
-    // Meta
-    // $category = self::get_playlists_column_value($item->snippet->playlistId, 'Title');
-    // $categor = $item->snippet->playlistId; //Get playlist name
+    $videoLink = "https://www.youtube.com/watch?v={$videoID}&ab_channel=DISBYDEM";
 
     $embedBlock = "<!-- wp:embed {\"url\":\"{$videoLink}\",\"type\":\"video\",\"providerNameSlug\":\"youtube\",\"responsive\":true,\"className\":\"wp-embed-aspect-16-9 wp-has-aspect-ratio\"} --><figure class=\"wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio\"><div class=\"wp-block-embed__wrapper\">{$videoLink}</div></figure><!-- /wp:embed -->";
 
@@ -238,19 +234,56 @@ class Dbd_Youtube
     );
     if ($post_id !== 0) {
       // update post with any new changes
-      // error_log("Exists already YT post_id is: " . json_encode($item) . "\n");
       $update = wp_update_post($yt_post);
-      error_log("Updated status - {$update} \npost content is: " . json_encode($content) . "\n");
-    } else {
-      // error_log("the YT item is: " . json_encode($item) . "\n");
-      error_log("the video to save as cpt is: " . json_encode($yt_post) . "\n\n");
-      $post_id = wp_insert_post($yt_post);
-      error_log("New post created post_id is: " . json_encode($post_id) . "\n");
-    }
-    // error_log("To be saved: " . json_encode($yt_post));
+      if ($update) {
+        // dis_by_dem_strip_meta_info($post_id);
+        // set as a cron job with 3 minute intervals
+        // dis_by_dem_video_info($post_id, $videoID);
+        $args = array($post_id, $videoID);
 
-    // if $yt_post_id update meta tags, categories(playlist title)
+        if (!wp_next_scheduled('dbd_schedule_video_meta_and_tag_update')) {
+          wp_schedule_event(time(), 'every_five_minutes', 'dbd_schedule_video_meta_and_tag_update', $args);
+        } else {
+          $last_job = wp_next_scheduled('dbd_schedule_video_meta_and_tag_update');
+          wp_schedule_event($last_job, 'every_five_minutes', 'dbd_schedule_video_meta_and_tag_update', $args);
+        }
+        // wp_schedule_single_event(time() + 180, 'dbd_schedule_video_meta_and_tag_update');
+      }
+    } else {
+      $post_id = wp_insert_post($yt_post);
+    }
     // return print_r("No videos saved");
+  }
+
+  /**
+   * Create YouTube post from playlist item
+   * @param object $videoID [Playlist item/video from API call]
+   * @param int $post_id [Playlist item/video from API call]
+   * @return bool $result [Returns True if successful and Fail otherwise]
+   */
+  public static function save_youtube_post_tags($videoID, $post_id)
+  {
+    $req_url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" . $videoID . "&key=" . $yt_key;
+    $response = wp_remote_get($req_url);
+    $code = wp_remote_retrieve_response_code($response);
+    $result = json_decode(wp_remote_retrieve_body($response));
+    if ($code == 200) {
+      // add the meta values for this post
+      $snippet = $result->items[0]->snippet;
+      $vid_tags = $snippet->tags;
+
+      //Pull tags from YT and add them to existing post tags
+      $post_tags = get_the_tags($post_id);
+      $new_tags = [];
+      foreach ($vid_tags as $key => $tag) {
+        if (!($post_tags) || !in_array($tag, $post_tags)) {
+          $new_tags[] = $tag;
+        }
+      }
+      if (!empty($new_tags)) {
+        wp_set_post_tags($post_id, $new_tags, true);
+      }
+    }
   }
 
 
@@ -341,7 +374,7 @@ class Dbd_Youtube
     ];
     $playlist_items = array();
     try {
-      $playlist_items = self::$service->playlistItems->listPlaylistItems('snippet,contentDetails,status', $queryParams);
+      $playlist_items = self::$service->playlistItems->listPlaylistItems('snippet,contentDetails,status,id', $queryParams);
       return $playlist_items;
     } catch (Exception $e) {
       write_log('Error getting Playlist Items for playlist - ' . $playlist_id);
@@ -364,7 +397,7 @@ class Dbd_Youtube
     try {
       $channel_playlists = self::$service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
       $playlists = array();
-      foreach ($channel_playlists->items as $playlist) {
+      foreach ($channel_playlists->items as $key => $playlist) {
         $id = $playlist->id;
         $title = $playlist->snippet->title;
 
@@ -387,7 +420,7 @@ class Dbd_Youtube
           }
           array_push($public, $item);
           if ($index == 0) {
-            self::save_video_as_youtube_post($item, $title);
+            self::dbd_save_video_as_youtube_post($item, $title);
           }
         }
         if (!(count($public) > 0)) {

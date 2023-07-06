@@ -28,6 +28,9 @@ defined('ABSPATH') || exit;
 
   <footer class="entry-footer">
     <?php
+    print_r("\n\n<br><h3>Post Meta</h3><br>");
+    var_dump(get_post_meta($post->ID));
+    print_r("\n<br>");
     $url = get_field('video_link');
     $vid_exists = (metadata_exists('post', $post->ID, 'video_link') && metadata_exists('post', $post->ID, 'video_info'));
     if ($vid_exists) :

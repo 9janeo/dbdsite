@@ -57,8 +57,9 @@ function load_custom_wp_admin_style()
 {
   $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
   $custom_admin_styles = "/css/custom-admin-style{$suffix}.css";
+  $custom_admin_scripts = "/js/custom-admin-script{$suffix}.js";
   wp_enqueue_style('custom-admin-style', get_stylesheet_directory_uri() . $custom_admin_styles, array(), wp_get_theme()->get('Version'));
-  wp_register_script('custom-admin-script', get_stylesheet_directory_uri() . "/js/custom-admin-script.js", array(), wp_get_theme()->get('Version'), true);
+  wp_register_script('custom-admin-script', get_stylesheet_directory_uri() . $custom_admin_scripts, array(), wp_get_theme()->get('Version'), true);
 }
 add_action('admin_enqueue_scripts', 'load_custom_wp_admin_style');
 
@@ -154,4 +155,44 @@ if (!function_exists('write_log')) {
       }
     }
   }
+}
+
+// add_action('dbd_cron_video_save', 'dbd_save_video_as_youtube_post');
+
+function api_actions()
+{
+  //  do things that concern the api here
+  // Fetch playlists from YouTube
+  // Sync with playlists in DB
+  // Fetch videos for each posdcast
+  // Sync video details with youtube_post
+
+  error_log("Well, we are at the api_actions ajax handler: " .  json_encode($_POST));
+  // $playlists = Dbd_Youtube::get_playlists_from_yt_with_items($channel_id);
+  $channel_id = $_POST['channel'];
+  Dbd_Youtube::get_playlists_from_yt_with_items($channel_id);
+
+  echo 'API actions called';
+  exit();
+}
+add_action('wp_ajax_api_actions', 'api_actions'); // executed when logged in
+// add_action('wp_ajax_nopriv_foo', 'foo' ); // executed when logged out
+
+// Add custom cron schedules
+add_filter('cron_schedules', 'dbd_add_custom_cron_schedules');
+function dbd_add_custom_cron_schedules($schedules)
+{
+  $schedules['every_five_minutes'] = array(
+    'interval' => 300,
+    'display'  => __('Every 5 Minutes', 'disbydem'),
+  );
+  $schedules['every_ten_minutes'] = array(
+    'interval' => 600,
+    'display'  => __('Every 10 Minutes', 'disbydem'),
+  );
+  $schedules['half_hourly'] = array(
+    'interval' => 1800,
+    'display'  => __('Every Half Hour', 'disbydem'),
+  );
+  return $schedules;
 }
