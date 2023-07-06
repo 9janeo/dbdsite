@@ -235,9 +235,10 @@ class Dbd_Youtube
     if ($post_id !== 0) {
       // update post with any new changes
       $update = wp_update_post($yt_post);
+      update_post_meta($post_id, 'video_id', $videoID);
       if ($update) {
         // dis_by_dem_strip_meta_info($post_id);
-        // set as a cron job with 3 minute intervals
+        // set as a cron job with 5 minute intervals
         // dis_by_dem_video_info($post_id, $videoID);
         $args = array($post_id, $videoID);
 
@@ -245,45 +246,14 @@ class Dbd_Youtube
           wp_schedule_event(time(), 'every_five_minutes', 'dbd_schedule_video_meta_and_tag_update', $args);
         } else {
           $last_job = wp_next_scheduled('dbd_schedule_video_meta_and_tag_update');
-          wp_schedule_event($last_job, 'every_five_minutes', 'dbd_schedule_video_meta_and_tag_update', $args);
+          wp_schedule_event($last_job + 300, 'every_five_minutes', 'dbd_schedule_video_meta_and_tag_update', $args);
         }
-        // wp_schedule_single_event(time() + 180, 'dbd_schedule_video_meta_and_tag_update');
       }
     } else {
       $post_id = wp_insert_post($yt_post);
+      update_post_meta($post_id, 'video_id', $videoID);
     }
     // return print_r("No videos saved");
-  }
-
-  /**
-   * Create YouTube post from playlist item
-   * @param object $videoID [Playlist item/video from API call]
-   * @param int $post_id [Playlist item/video from API call]
-   * @return bool $result [Returns True if successful and Fail otherwise]
-   */
-  public static function save_youtube_post_tags($videoID, $post_id)
-  {
-    $req_url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" . $videoID . "&key=" . $yt_key;
-    $response = wp_remote_get($req_url);
-    $code = wp_remote_retrieve_response_code($response);
-    $result = json_decode(wp_remote_retrieve_body($response));
-    if ($code == 200) {
-      // add the meta values for this post
-      $snippet = $result->items[0]->snippet;
-      $vid_tags = $snippet->tags;
-
-      //Pull tags from YT and add them to existing post tags
-      $post_tags = get_the_tags($post_id);
-      $new_tags = [];
-      foreach ($vid_tags as $key => $tag) {
-        if (!($post_tags) || !in_array($tag, $post_tags)) {
-          $new_tags[] = $tag;
-        }
-      }
-      if (!empty($new_tags)) {
-        wp_set_post_tags($post_id, $new_tags, true);
-      }
-    }
   }
 
 
@@ -458,27 +428,6 @@ class Dbd_Youtube
   static function pull_item_ids($item)
   {
     return $item->id;
-  }
-
-  /**
-   * Adds tags to a post from YT query results
-   * @param $post_id Post to update
-   * @param $video Youtube video from API call
-   * @return bool
-   */
-  public static function update_post_tags($post_id, $video)
-  {
-    $vid_tags = $video->snippet->tags;
-    $post_tags = get_the_tags($post_id);
-    $new_tags = [];
-    foreach ($vid_tags as $key => $tag) {
-      if (!($post_tags) || !in_array($tag, $post_tags)) {
-        $new_tags[] = $tag;
-      }
-    }
-    if (!empty($new_tags)) {
-      wp_set_post_tags($post_id, $new_tags, true);
-    }
   }
 
   /**
