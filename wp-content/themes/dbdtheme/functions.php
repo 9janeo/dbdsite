@@ -196,3 +196,15 @@ function dbd_add_custom_cron_schedules($schedules)
   );
   return $schedules;
 }
+
+function dbd_get_cron_jobs()
+{
+  $cron_jobs = get_option('cron');
+  echo '<br><br>';
+  foreach ($cron_jobs as $job) {
+    echo '<div>';
+    var_dump($job);
+    echo '</div>';
+    echo '<br>';
+  }
+}

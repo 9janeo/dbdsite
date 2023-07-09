@@ -109,7 +109,7 @@ class Dbd_Youtube
   }
 
   /**
-   * Accept a playlist and saves it to database
+   * Accept a playlist object from YouTube and saves it to database
    * @param object $playlists [Playlists for the channel to add to the database]
    * returns a success or error message
    */
@@ -170,8 +170,6 @@ class Dbd_Youtube
 
     // Fetch existing playlist db row usint Id
     $check = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_name} WHERE `ID`='%d'", $id));
-    error_log("Check is :\n");
-    error_log(json_encode($check->Title));
 
     $where = array('id' => $id);
     $updateCols = array();
@@ -233,6 +231,7 @@ class Dbd_Youtube
       'ping_status' => 'open'
     );
     if ($post_id !== 0) {
+      // check for meta/differences
       // update post with any new changes
       $update = wp_update_post($yt_post);
       update_post_meta($post_id, 'video_id', $videoID);
@@ -241,12 +240,13 @@ class Dbd_Youtube
         // set as a cron job with 5 minute intervals
         // dis_by_dem_video_info($post_id, $videoID);
         $args = array($post_id, $videoID);
+        error_log('Scheduling meta and tag updates for wp_post ' . $post_id . ' | yt video id ' . $videoID . ' in playlist' . $plTitle);
 
         if (!wp_next_scheduled('dbd_schedule_video_meta_and_tag_update')) {
-          wp_schedule_event(time(), 'every_five_minutes', 'dbd_schedule_video_meta_and_tag_update', $args);
+          wp_schedule_single_event(time() + 300, 'dbd_schedule_video_meta_and_tag_update', $args);
         } else {
           $last_job = wp_next_scheduled('dbd_schedule_video_meta_and_tag_update');
-          wp_schedule_event($last_job + 300, 'every_five_minutes', 'dbd_schedule_video_meta_and_tag_update', $args);
+          wp_schedule_single_event($last_job + 300, 'dbd_schedule_video_meta_and_tag_update', $args);
         }
       }
     } else {
@@ -254,6 +254,20 @@ class Dbd_Youtube
       update_post_meta($post_id, 'video_id', $videoID);
     }
     // return print_r("No videos saved");
+  }
+
+  /**
+   * Sync the post tags with the tags on YouTube using the corresponding video IDs
+   * @param array $posts [Accepts an array the WP posts with the post_id and title keys to sync (optional)]
+   * @param object $plTitle [Playlist title from which item was retrieved]
+   * @param array $videos [Accepts an array of video ids from a playlist to retrieve tags and add to WP post]
+   *
+   */
+  public static function dbd_sync_youtube_post_tags($posts, $plTitle)
+  {
+    // get the post id from title
+    // g
+    error_log("================The dbd_sync_youtube_post_tags function for " . json_encode($posts) . " and $plTitle================\n");
   }
 
 
@@ -323,6 +337,9 @@ class Dbd_Youtube
         $indexVid = $arr_of_vars[2];
         $url = 'https://www.youtube.com/watch?v=' . $indexVid . '&list=' . $id;
         $playlist->url = $url;
+
+        error_log("Playlist is: \n");
+        error_log($playlist);
         array_push($playlists, json_encode($playlist));
       }
       return $channel_playlists;
@@ -364,16 +381,16 @@ class Dbd_Youtube
       'maxResults' => 25
     ];
 
+    error_log("Attempting API playlist call and save!");
+
     try {
       $channel_playlists = self::$service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
       $playlists = array();
       foreach ($channel_playlists->items as $key => $playlist) {
         $id = $playlist->id;
         $title = $playlist->snippet->title;
-
         // save or update playlist title as a category
         Dbd_Youtube::create_category_from_title($title);
-        array_push($playlists, $playlist);
 
         // get the corresponding playlist items
         $items = self::get_playlist_items($playlist->id)->items;
@@ -381,16 +398,19 @@ class Dbd_Youtube
           // skip playlist if no items in it
           continue;
         }
+        array_push($playlists, $playlist);
 
         $public = array();
+        $posts = array();
         // add qualifying playlist items to public
         foreach ($items as $index => $item) {
           if (($item->status->privacyStatus == 'private')) {
             continue;
           }
           array_push($public, $item);
-          if ($index == 0) {
-            self::dbd_save_video_as_youtube_post($item, $title);
+          if ($index == 1) {
+            // array_push($posts, $post);
+            // self::dbd_save_video_as_youtube_post($item, $title);
           }
         }
         if (!(count($public) > 0)) {
@@ -398,9 +418,20 @@ class Dbd_Youtube
           continue;
         }
         $playlist->items = $public;
+        $filtered_items = array_map('Dbd_Youtube::pull_item_ids', $playlist->items);
+        $posts[$title] = array(
+          "title"   => $item->snippet->title,
+          "videos" => $filtered_items
+        );
+        // send batch videos to save or sync
+        // self::dbd_save_video_as_youtube_post($item, $title);
         $url = self::get_resource_url($playlist, 'playlist', $id);
         $playlist->url = $url;
+        // sync tags of posts that belong to this playlist
+        self::dbd_sync_youtube_post_tags($post, $title);
       }
+      // Save or update Playlist in DB
+      self::save_playlists($playlists);
 
       return $playlists;
     } catch (Exception $e) {
@@ -427,7 +458,7 @@ class Dbd_Youtube
 
   static function pull_item_ids($item)
   {
-    return $item->id;
+    return $item->contentDetails->videoId;
   }
 
   /**

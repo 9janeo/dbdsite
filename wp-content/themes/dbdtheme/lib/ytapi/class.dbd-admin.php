@@ -132,6 +132,7 @@ class Dbd_Admin
         <div class="yt playlists row row-cols-3">
           <?php $videos = (object) array();
           foreach ($playlists as $key => $playlist) :
+            var_dump($playlist);
             // error_log("Displaying for " . json_encode($playlist));
             $id = isset($playlist->snippet) ? $playlist->id : $playlist->PlaylistId;
             $itemCount = isset($playlist->contentDetails) ? $playlist->contentDetails->itemCount : $playlist->VideoList;

@@ -40,7 +40,8 @@ if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
           // Display the video analytics page
           $channels = DBD_Channels::get_dbd_channels('youtube');
           $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
-          // $playlists = Dbd_Youtube::get_playlists_from_yt_with_items($channel_id);          
+          // $playlists = Dbd_Youtube::get_playlists_from_yt_with_items($channel_id);
+          // Dbd_Youtube::save_playlists($playlists);
           if (isset($playlists) && $playlists) :
             Dbd_Admin::display_playlists($playlists, true);
           endif;
@@ -54,8 +55,5 @@ if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
   ?>
 
   <h1>Scheduled</h1>
-  <?php $schedules = wp_get_schedules();
-  var_dump($schedules);
-  var_dump(get_transient('doing_cron'));
-  ?>
+  <?php dbd_get_cron_jobs(); ?>
 </div>
