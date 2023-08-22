@@ -1,6 +1,9 @@
 wp-config.php
 .DS_Store
 
+wp-admin/*
+wp-includes/*
+
 wp-content/.DS_Store
 wp-content/upgrade/*
 wp-content/uploads/*
