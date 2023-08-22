@@ -1,8 +1,22 @@
 wp-config.php
+license.txt
+readme.html
+wp-activate.php
+wp-comments-post.php
+wp-config-sample.php
+wp-links-opml.php
+wp-load.php
+wp-login.php
+wp-mail.php
+wp-settings.php
+wp-signup.php
+wp-trackback.php
+xmlrpc.php
+
 .DS_Store
 
-wp-admin/*
-wp-includes/*
+wp-admin/
+wp-includes/
 
 wp-content/.DS_Store
 wp-content/upgrade/*
@@ -25,7 +39,7 @@ wp-content/themes/dbdtheme/dist-product
 wp-content/themes/dbdtheme/npm-debug.log
 wp-content/themes/dbdtheme/vendor/
 
-wp-content/plugins/*
+wp-content/plugins/
 !wp-content/plugins/cc-vortex
 
 # ignore local .vscode configuration
