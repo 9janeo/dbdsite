@@ -28,22 +28,34 @@ defined('ABSPATH') || exit;
 
   <footer class="entry-footer">
     <?php
+    // print_r("\n\n<br><h3>Post Meta</h3><br>");
+    // var_dump(get_post_meta($post->ID));
+    // print_r("\n<br>");
     $url = get_field('video_link');
-    $vid_exists = (metadata_exists('post', $post->ID, 'video_link') && metadata_exists('post', $post->ID, 'video_info'));
+    $url = get_post_meta($post->ID, 'video_link', true);
+    $link = get_post_meta($post->ID, 'video_link', true);
+    $video_id = get_post_meta($post->ID, 'video_id', true);
+    $vid_exists = (isset($link) && isset($video_id));
     if ($vid_exists) :
-      $yt_meta = get_post_meta($post->ID, 'video_info')[0];
-      $thumb = $yt_meta->thumbnails->high->url;
-      $title = $yt_meta->title;
-      $desc = $yt_meta->description;
+      $publishedAt = get_post_meta($post->ID, 'publishedAt', true);
+      $thumb = get_post_meta($post->ID, 'video_thumb', true);
+      $title = get_the_title();
+      $desc = get_the_content();
+      // move link building to save as youtube post function
       $url_pattern = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
-      $desc = preg_replace($url_pattern, '<a href="$0" target="_blank">$0</a>', $desc);
+      // preg_match_all($url_pattern, $desc, $matches);
+      // var_dump($matches);
+      // $desc = preg_replace($url_pattern, '<a href="$0" target="_blank">$0</a>', $desc);
     ?>
       <div class="yt-meta card">
-        <a href="<?php echo get_field('video_link') ?>" target="_blank"><img class="card-img-top" src="<?php echo $thumb ?>" /></a>
+        <!-- <a href="<?php // echo $url 
+                      ?>" target="_blank"><img class="card-img-top" src="<?php // echo $thumb 
+                                                                          ?>" /></a> -->
         <div class="card-body">
-          <h3 class="card-title"><a href="<?php echo get_field('video_link') ?>" target="_blank"><?php echo $title ?></a></h3>
-          <p class="card-text"><?php echo apply_filters('the_content', $desc) ?></p>
-          <p class="small card-text pull-left">Published: <?php echo date("Y-m-d", strtotime($yt_meta->publishedAt)); ?></p>
+          <h3 class="card-title"><a href="<?php echo $link ?>" target="_blank"><?php echo $title ?></a></h3>
+          <!-- <p class="card-text"><?php // echo $desc 
+                                    ?></p> -->
+          <p class="small card-text pull-left">Published: <?php echo date("Y-m-d", strtotime($publishedAt)); ?></p>
         </div>
       </div>
     <?php endif; ?>

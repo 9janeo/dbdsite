@@ -1,0 +1,480 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Clear Cut Vortex\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-31 02:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.4; wp-6.1.1\n"
+"X-Domain: cc-vortex"
+
+#: admin/class.vortex-admin.php:107
+msgid "(undo)"
+msgstr ""
+
+#: includes/social-post-type.php:46
+msgid "A custome post type for social posts"
+msgstr ""
+
+#: admin/class.vortex-menu.php:129
+msgid "Account"
+msgstr ""
+
+#: includes/social-post-type.php:10
+msgid "Add New"
+msgstr ""
+
+#: includes/social-post-type.php:9
+msgctxt "Add New on Toolbar"
+msgid "Social Post"
+msgstr ""
+
+#: includes/social-post-type.php:11
+msgid "Add New Social Post"
+msgstr ""
+
+#: includes/social-post-type.php:8
+msgctxt "Admin Menu text"
+msgid "Social Posts"
+msgstr ""
+
+#: includes/social-post-type.php:15
+msgid "All Social Posts"
+msgstr ""
+
+#: admin/class.vortex-menu.php:119
+msgid "API Key"
+msgstr ""
+
+#: admin/class.vortex-settings.php:218
+msgid "Blue"
+msgstr ""
+
+#: admin/class.vortex-menu.php:28
+msgid "Channels"
+msgstr ""
+
+#: admin/class.vortex-menu.php:121
+msgid ""
+"Choose to either discard the worst spam automatically or to always put all "
+"spam in spam folder."
+msgstr ""
+
+#. Name of the plugin
+msgid "Clear Cut Vortex"
+msgstr ""
+
+#. Author of the plugin
+msgid "ClearCut"
+msgstr ""
+
+#: admin/class.vortex-menu.php:84
+msgid "Click the Use this Key button."
+msgstr ""
+
+#: admin/class.vortex-settings.php:219
+msgid "Coffee"
+msgstr ""
+
+#: admin/class.vortex-menu.php:120
+msgid "Comments"
+msgstr ""
+
+#: admin/class.vortex-admin.php:119
+msgid "Configure"
+msgstr ""
+
+#: admin/class.vortex-menu.php:83
+msgid "Copy and paste the API key into the text field."
+msgstr ""
+
+#: admin/class.vortex-settings.php:110
+msgid "Custom API Key"
+msgstr ""
+
+#: admin/class.vortex-settings.php:96
+msgid "Custom CSS for the Login screen"
+msgstr ""
+
+#: admin/class.vortex-settings.php:46
+msgid "Custom Footer"
+msgstr ""
+
+#: admin/class.vortex-settings.php:50
+msgid "Custom footer text"
+msgstr ""
+
+#: admin/class.vortex-settings.php:101
+msgid "Custom Message"
+msgstr ""
+
+#: admin/class.vortex-settings.php:64
+msgid "Custom Scheme"
+msgstr ""
+
+#: admin/class.vortex-settings.php:92
+msgid "Custom Style"
+msgstr ""
+
+#: admin/class.vortex-settings.php:105
+msgid "Custom text and/or markup"
+msgstr ""
+
+#: admin/class.vortex-settings.php:83
+msgid "Custom Title"
+msgstr ""
+
+#: admin/class.vortex-settings.php:87
+msgid "Custom title attribute for the logo link"
+msgstr ""
+
+#: admin/class.vortex-settings.php:55
+msgid "Custom Toolbar"
+msgstr ""
+
+#: admin/class.vortex-settings.php:74
+msgid "Custom URL"
+msgstr ""
+
+#: admin/class.vortex-settings.php:78
+msgid "Custom URL for the channels logo link"
+msgstr ""
+
+#: admin/class.vortex-settings.php:28
+msgid "Customize Admin Area"
+msgstr ""
+
+#: admin/class.vortex-settings.php:34
+msgid "Customize Social Channels Page"
+msgstr ""
+
+#: admin/class.vortex-menu.php:116
+msgid "Dashboard"
+msgstr ""
+
+#: admin/class.vortex-settings.php:216
+msgid "Default"
+msgstr ""
+
+#: admin/class.vortex-settings.php:68
+msgid "Default color scheme for new users"
+msgstr ""
+
+#: admin/class.vortex-settings.php:149
+msgid "Disable custom styles"
+msgstr ""
+
+#: admin/class.vortex-settings.php:220
+msgid "Ectoplasm"
+msgstr ""
+
+#: includes/social-post-type.php:13
+msgid "Edit Social Post"
+msgstr ""
+
+#: admin/class.vortex-settings.php:148
+msgid "Enable custom styles"
+msgstr ""
+
+#: admin/class.vortex-menu.php:78
+msgid "Enter an API Key"
+msgstr ""
+
+#: admin/class.vortex-menu.php:119
+msgid "Enter/remove an API key."
+msgstr ""
+
+#: admin/class.vortex-menu.php:142
+msgid "For more information:"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://clearcutcomms.ca"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://clearcutcomms.ca/vortex"
+msgstr ""
+
+#: admin/class.vortex-menu.php:81
+msgid "If you already have an API key"
+msgstr ""
+
+#: admin/class.vortex-settings.php:217
+msgid "Light"
+msgstr ""
+
+#: admin/views/title.php:3
+msgid "Manage your your site and your content"
+msgstr ""
+
+#: admin/class.vortex-settings.php:221
+msgid "Midnight"
+msgstr ""
+
+#: includes/social-post-type.php:12
+msgid "New Social Post"
+msgstr ""
+
+#: admin/class.vortex-menu.php:67
+msgid "New to Vortex"
+msgstr ""
+
+#: includes/social-post-type.php:19
+msgid "No books found in Trash."
+msgstr ""
+
+#: includes/social-post-type.php:18
+msgid "No books found."
+msgstr ""
+
+#: admin/class.vortex-settings.php:222
+msgid "Ocean"
+msgstr ""
+
+#: admin/class.vortex-menu.php:60
+msgid "On this page, you are able to set up the Vortex plugin."
+msgstr ""
+
+#: admin/class.vortex-menu.php:109
+msgid ""
+"On this page, you are able to update your Vortex settings and view spam "
+"stats."
+msgstr ""
+
+#: admin/class.vortex-menu.php:97
+msgid "On this page, you are able to view stats on spam filtered on your site."
+msgstr ""
+
+#: includes/social-post-type.php:20
+msgctxt ""
+"Overrides the “Featured Image” phrase for this post type. Added in 4.3"
+msgid "Social Post Cover Image"
+msgstr ""
+
+#: includes/social-post-type.php:25
+msgctxt ""
+"Overrides the “Insert into post”/”Insert into page” phrase (used when "
+"inserting media into a post). Added in 4.4"
+msgid "Insert into book"
+msgstr ""
+
+#: includes/social-post-type.php:22
+msgctxt ""
+"Overrides the “Remove featured image” phrase for this post type. Added in 4.3"
+msgid "Remove cover image"
+msgstr ""
+
+#: includes/social-post-type.php:21
+msgctxt ""
+"Overrides the “Set featured image” phrase for this post type. Added in 4.3"
+msgid "Set cover image"
+msgstr ""
+
+#: includes/social-post-type.php:26
+msgctxt ""
+"Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used "
+"when viewing media attached to a post). Added in 4.4"
+msgid "Uploaded to this book"
+msgstr ""
+
+#: includes/social-post-type.php:23
+msgctxt ""
+"Overrides the “Use as featured image” phrase for this post type. Added in 4.3"
+msgid "Use as cover image"
+msgstr ""
+
+#: admin/class.vortex-menu.php:56 admin/class.vortex-menu.php:93
+#: admin/class.vortex-menu.php:105
+msgid "Overview"
+msgstr ""
+
+#: includes/social-post-type.php:17
+msgid "Parent Social Posts:"
+msgstr ""
+
+#: includes/social-post-type.php:6
+msgctxt "Post type general name"
+msgid "Social Posts"
+msgstr ""
+
+#: includes/social-post-type.php:7
+msgctxt "Post type singular name"
+msgid "Social Post"
+msgstr ""
+
+#: admin/class.vortex-admin.php:108
+msgid "Re-adding..."
+msgstr ""
+
+#: admin/class.vortex-settings.php:59
+msgid "Remove new post and comment links from the Toolbar"
+msgstr ""
+
+#: admin/class.vortex-admin.php:104
+msgid "Remove this URL"
+msgstr ""
+
+#: admin/class.vortex-admin.php:105
+msgid "Removing..."
+msgstr ""
+
+#: includes/social-post-type.php:27
+msgctxt ""
+"Screen reader text for the filter links heading on the post type listing "
+"screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4"
+msgid "Filter books list"
+msgstr ""
+
+#: includes/social-post-type.php:29
+msgctxt ""
+"Screen reader text for the items list heading on the post type listing "
+"screen. Default “Posts list”/”Pages list”. Added in 4.4"
+msgid "Social Posts list"
+msgstr ""
+
+#: includes/social-post-type.php:28
+msgctxt ""
+"Screen reader text for the pagination heading on the post type listing "
+"screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4"
+msgid "Social Posts list navigation"
+msgstr ""
+
+#: includes/blocks/search-form.php:12 includes/blocks/search-form.php:16
+#: includes/blocks/search-form.php:18
+msgid "Search"
+msgstr ""
+
+#: includes/social-post-type.php:16
+msgid "Search Social Posts"
+msgstr ""
+
+#: admin/class.vortex-admin.php:78
+msgid "Settings"
+msgstr ""
+
+#: admin/class.vortex-menu.php:120
+msgid ""
+"Show the number of approved comments beside each comment author in the "
+"comments list page."
+msgstr ""
+
+#: admin/class.vortex-menu.php:71
+#, php-format
+msgid "Sign up for an account on %s to get an API Key."
+msgstr ""
+
+#: admin/class.vortex-admin.php:120
+msgid "Socials"
+msgstr ""
+
+#: cc-vortex.php:73
+msgid "Special message for users"
+msgstr ""
+
+#: admin/class.vortex-menu.php:133
+msgid "Status"
+msgstr ""
+
+#: admin/class.vortex-menu.php:121
+msgid "Strictness"
+msgstr ""
+
+#: admin/class.vortex-menu.php:132
+msgid "Subscription Type"
+msgstr ""
+
+#: admin/class.vortex-settings.php:223
+msgid "Sunrise"
+msgstr ""
+
+#: includes/social-post-type.php:24
+msgctxt ""
+"The post type archive label used in nav menus. Default “Post Archives”. "
+"Added in 4.4"
+msgid "Social Post archives"
+msgstr ""
+
+#: admin/class.vortex-menu.php:133
+msgid "The subscription status - active, cancelled or suspended"
+msgstr ""
+
+#: admin/class.vortex-menu.php:132
+msgid "The Vortex subscription plan"
+msgstr ""
+
+#: admin/class.vortex-settings.php:121
+msgid "These settings enable you to configure the Vortex settings"
+msgstr ""
+
+#: admin/class.vortex-settings.php:127
+msgid "These settings enable you to customize the Vortex Channels"
+msgstr ""
+
+#. Description of the plugin
+msgid "This is a WordPress management plugin provided by Clear Cut"
+msgstr ""
+
+#: admin/class.vortex-admin.php:106
+msgid "URL removed"
+msgstr ""
+
+#: includes/social-post-type.php:14
+msgid "View Social Post"
+msgstr ""
+
+#: admin/class.vortex-menu.php:11
+msgid "Vortex"
+msgstr ""
+
+#: admin/class.vortex-menu.php:10
+msgid "Vortex Admin Page"
+msgstr ""
+
+#: admin/class.vortex-menu.php:107 admin/class.vortex-menu.php:118
+#: admin/class.vortex-menu.php:131
+msgid "Vortex Configuration"
+msgstr ""
+
+#: admin/class.vortex-menu.php:143
+msgid "Vortex FAQ"
+msgstr ""
+
+#: admin/class.vortex-menu.php:59 admin/class.vortex-menu.php:96
+#: admin/class.vortex-menu.php:108
+msgid "Vortex filters out spam, so you can focus on more important things."
+msgstr ""
+
+#: admin/class.vortex-menu.php:58 admin/class.vortex-menu.php:69
+#: admin/class.vortex-menu.php:80
+msgid "Vortex Setup"
+msgstr ""
+
+#: admin/class.vortex-menu.php:29
+msgid "Vortex Socials"
+msgstr ""
+
+#: admin/class.vortex-menu.php:95
+msgid "Vortex Stats"
+msgstr ""
+
+#: admin/class.vortex-menu.php:144
+msgid "Vortex Support"
+msgstr ""
+
+#: cc-vortex.php:70
+msgid "What's your DBD'ers scale?"
+msgstr ""
+
+#: admin/class.vortex-menu.php:70
+msgid ""
+"You need to enter an API key to activate the Vortex service on your site."
+msgstr ""

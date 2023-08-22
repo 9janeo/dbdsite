@@ -1,0 +1,7 @@
+@import "theme/child_theme_variables";                   // <------- Add your variables into this file. Also add variables to overwrite Bootstrap variables here
+@import "theme/mixins";                   // <------- Add mixins into this file. Also add mixins to overwrite Bootstrap mixins here
+@import "assets/bootstrap5/bootstrap";                             // <------- Loads Bootstrap5
+@import "assets/understrap/theme/understrap";  // <------- Loads the Understrap defaults. Just a few classes to incorporate BS in WP
+@import "assets/fontawesome/font-awesome";                           // <------- Font Awesome Icon font
+
+@import "theme/admin_styles";                   // <------- Add your custom admin styles here
