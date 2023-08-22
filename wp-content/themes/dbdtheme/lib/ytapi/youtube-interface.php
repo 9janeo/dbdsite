@@ -68,9 +68,6 @@ function load_videos($channel_id, $client, $service)
   return $response;
 }
 
-$client->setAuthConfig(__DIR__ . '/../client_secret.json');
-
-
 /**
  * Returns a url based on the source type provided
  * @param string  $resource_id  [The id of the resource]
