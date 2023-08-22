@@ -50,7 +50,7 @@ defined('ABSPATH') || exit;
       <div class="yt-meta card">
         <!-- <a href="<?php // echo $url 
                       ?>" target="_blank"><img class="card-img-top" src="<?php // echo $thumb 
-                                                                                            ?>" /></a> -->
+                                                                          ?>" /></a> -->
         <div class="card-body">
           <h3 class="card-title"><a href="<?php echo $link ?>" target="_blank"><?php echo $title ?></a></h3>
           <!-- <p class="card-text"><?php // echo $desc 
