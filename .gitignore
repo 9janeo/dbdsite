@@ -25,8 +25,6 @@ wp-content/themes/dbdtheme/dist-product
 wp-content/themes/dbdtheme/npm-debug.log
 wp-content/themes/dbdtheme/vendor/
 
-!wp-content/plugins/
-
 wp-content/plugins/*
 !wp-content/plugins/cc-vortex
 
