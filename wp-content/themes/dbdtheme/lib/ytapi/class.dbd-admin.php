@@ -18,7 +18,6 @@ class Dbd_Admin
     }
     require_once(get_stylesheet_directory() . '/vendor/autoload.php');
 
-    // require_once('yt-service.php');
     require_once('class.dbd-youtube.php');
     require_once('class.dbd-menu.php');
     require_once('class.dbd-settings.php');
@@ -41,13 +40,6 @@ class Dbd_Admin
     add_action('admin_init', array('DBD_Channels', 'ready_channels_table_into_db'));
     add_action('admin_init', array('DBD_settings', 'dbd_register_settings'));
     add_action('admin_init', array('DBD_Channels', 'dbd_register_channel_settings'));
-
-    // load client
-    // set up client scopes
-    // set client Access type
-    // load client service account credentials from json
-    // get channel Id
-    // Get channel username
   }
 
   public static function display_start_page()
@@ -55,7 +47,7 @@ class Dbd_Admin
     echo '<h3>DisByDem Admin: Display start page</h3>';
     if (isset($_GET['action'])) {
       if ($_GET['action'] == 'delete-key') {
-        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], self::NONCE))
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce']))
           delete_option('wordpress_api_key');
       }
     }
@@ -121,41 +113,48 @@ class Dbd_Admin
   }
 
   /**
-  * Displays youtube playlists
-  * @param  array  $playlists  [The feed of playlists to display]
-  * @param bool $listvideo  [Control if video list will be loaded with each playlist displayed]
-  **/
+   * Displays youtube playlists
+   * @param  array  $playlists  [The feed of playlists to display]
+   * @param bool $listvideo  [Control if video list will be loaded with each playlist displayed]
+   **/
   public static function display_playlists($playlists, $listvideo = false)
   {
     if (isset($playlists) && $playlists) :
-      if (!isset($playlists->error)) : ?>
+      if (!isset($playlists['error'])) : ?>
         <div class="yt playlists row row-cols-3">
-          <?php $videos = (object) array();
+          <?php
+          $listIds = array();
           foreach ($playlists as $key => $playlist) :
-            // var_dump($playlist);
-            $id = $playlist->id;
-            if (!($playlist->contentDetails->itemCount > 0)) {
+            // error_log("Displaying for " . json_encode($playlist));
+            $id = isset($playlist->snippet) ? $playlist->id : $playlist->PlaylistId;
+            $itemCount = isset($playlist->contentDetails) ? $playlist->contentDetails->itemCount : $playlist->VideoList;
+            $items = isset($playlist->items) ? $playlist->items : json_decode($playlist->VideoList);
+            if (isset($itemCount) && !($itemCount > 0)) {
               continue; # skip playlist if no items in it
-            } ?>
+            }
+          ?>
             <div class="card pl_<?= $key + 1 ?> mb-3">
               <?php get_template_part('lib/youtube-templates/playlists', 'playlists', $playlist); ?>
               <div class="card-footer py-2">
-                <?php if ($listvideo == true && isset($playlist->items) && $playlist->items) :
+                <?php
+                if ($listvideo == true && isset($items) && $items) :
                   // if listvideo parameter is true get the playlist items
-                  $videos = $playlist->items;
+                  foreach ($items as $item) {
+                    $listIds[$item][$playlist->Title] = $id;
+                  }
                 ?>
                   <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-target="#list_<?php echo $id; ?>" data-bs-target="#list_<?php echo $id; ?>" aria-expanded="false" aria-controls="collapseVideoList">Toggle list
                   </button>
                   <div id="list_<?php echo $id ?>" class="collapse playlist mt-2">
-                    <?php get_template_part('lib/youtube-templates/video_list', 'video_list', $videos); ?>
+                    <?php get_template_part('lib/youtube-templates/video_list', 'video_list', $items); ?>
                   </div>
                 <?php endif; ?>
               </div>
             </div>
           <?php endforeach; ?>
         </div>
-      <?php else :
-        return print_r($playlist->error);
+<?php else :
+        return print_r($playlists['error']);
       endif;
     endif;
   }

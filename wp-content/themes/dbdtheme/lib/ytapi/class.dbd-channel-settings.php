@@ -30,11 +30,20 @@ class DBD_Channels
     return $is_error;
   }
 
-  public static function get_dbd_channels()
+  /**
+   * Returns registed channels
+   * Accepts platform name as a filter
+   * @param string $platform [filters the results to only channels on the provided platform]
+   */
+  public static function get_dbd_channels($platform = null)
   {
     global $wpdb;
     $table_name = $wpdb->prefix . 'channels';
-    $channels = $wpdb->get_results("SELECT * FROM {$table_name}");
+    if (isset($platform) && !empty($platform)) :
+      $channels = $wpdb->get_results("SELECT * FROM {$table_name} WHERE platform = '{$platform}'");
+    else :
+      $channels = $wpdb->get_results("SELECT * FROM {$table_name}");
+    endif;
     return $channels;
   }
 
@@ -176,7 +185,7 @@ class DBD_Channels
     $type = $args['type'];
     $size = $args['size'];
     $value = $args['value'];
-    $platform_options = self::dbd_callback_select_options('platform');
+    $platform_options = DBD_Settings::dbd_callback_select_options('platform');
 
     switch ($type) {
       case 'hidden':
@@ -203,23 +212,6 @@ class DBD_Channels
   public static function dbd_callback_add_channel()
   {
     echo '<p>' . esc_html__('Add the details for this channel, load each channel in settings', 'disbydem') . '</p>';
-  }
-
-  // callback for select options
-  public static function dbd_callback_select_options($options)
-  {
-    $platfom_options = array(
-      'youtube'   => esc_html__('YouTube',  'disbydem'),
-      'tiktok'      => esc_html__('TikTok',    'disbydem'),
-      'instagram'    => esc_html__('Instagram',    'disbydem'),
-      'facebook' => esc_html__('Facebook',  'disbydem'),
-    );
-
-    if ($options == 'custom_styles') {
-      return $style_options;
-    } else {
-      return $platfom_options;
-    }
   }
 
   // callback: new Channel name
@@ -261,7 +253,7 @@ class DBD_Channels
     $id      = isset($args['id']) ? $args['id'] : '';
     $label   = isset($args['label']) ? $args['label'] : '';
     $selected_option = isset($options['platform']) ? sanitize_text_field($options['platform']) : '';
-    $select_options = self::dbd_callback_select_options('platform');
+    $select_options = DBD_Settings::dbd_callback_select_options('platform');
     echo '<select id="' . $id . '" name="' . $id . '">';
     foreach ($select_options as $value => $option) {
       $selected = selected($selected_option === $value, true, false);
@@ -333,7 +325,7 @@ class DBD_Channels
     $error = array();
     $warning = array();
 
-    $platfom_options = self::dbd_callback_select_options('platform');
+    $platfom_options = DBD_Settings::dbd_callback_select_options('platform');
 
     // channel name
     if (isset($input['channel_name'])) {
@@ -408,8 +400,6 @@ class DBD_Channels
   public static function edit_dbd_channel()
   {
     if (isset($_POST['edit_dbd_channel'])) {
-      write_log("Attempting to validate update dbd_channel \n");
-      write_log($_POST);
       DBD_Channels::dbd_callback_validate_channel($_POST['edit_dbd_channel']);
 
       if (!empty($_POST['errors'])) {
@@ -423,36 +413,24 @@ class DBD_Channels
         // Get corresponding id row from table| check against new data
         $id = $_POST['id'];
         $data_ = array(
-          'id' => $_POST['id'],
           'channel_name' => $_POST['channel_name'],
           'platform' => $_POST['platform'],
           'channel_username' => $_POST['channel_username'],
           'channel_id' => $_POST['channel_id'],
           'channel_url'  => $_POST['channel_url'],
         );
-        // check that channel with the different id and same channel_id||channel_name does not exist
 
-        // $updated = $wpdb->update( $table, $data, $where );
+        $where = array('id' => $id);
 
-        // if ( false === $updated ) {
-        //     // There was an error.
-        // } else {
-        //     // No error. You can check updated to see how many rows were changed.
-        // }
-        $where = array('id' => $id); // NULL value in WHERE clause.
-
-        $updated = $wpdb->update($table_name, $data_, $where, array('%d', '%s', '%s', '%s', '%s', '%s'), array('%d'));
-        // $result = $wpdb->update($table_name, $data_, array('%s', '%s', '%s', '%s', '%s'));
+        $updated = $wpdb->update($table_name, $data_, $where, array('%s', '%s', '%s', '%s', '%s'), array('%d'));
 
         if (false === $updated) {
           write_log($wpdb->last_error);
-          print_r($wpdb->last_error);
           // wp_die('Failed to add channel');
         } else {
           echo "Channel updated";
           // reload form
         }
-        // return print_r($_POST['errors']);
       }
     }
   }
