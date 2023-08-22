@@ -266,6 +266,7 @@ class Dbd_Youtube
   public static function dbd_sync_youtube_post_tags($posts, $plTitle)
   {
     // get the post id from title
+    // g
     error_log("================The dbd_sync_youtube_post_tags function for " . json_encode($posts) . " and $plTitle================\n");
   }
 
@@ -427,7 +428,7 @@ class Dbd_Youtube
         $url = self::get_resource_url($playlist, 'playlist', $id);
         $playlist->url = $url;
         // sync tags of posts that belong to this playlist
-        self::dbd_sync_youtube_post_tags($posts, $title);
+        self::dbd_sync_youtube_post_tags($post, $title);
       }
       // Save or update Playlist in DB
       self::save_playlists($playlists);
@@ -497,50 +498,6 @@ class Dbd_Youtube
       $playlists = $wpdb->get_results("SELECT * FROM {$table_name}");
     endif;
     return $playlists;
-  }
-
-  /**
-   * Returns the platform fomr the channel ID provided
-   * @param string $channel_id
-   */
-  public static function get_channel_platform($channel_id)
-  {
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'channels';
-    $platform = $wpdb->get_results("SELECT platform FROM {$table_name} where channel_id = '{$channel_id}'");
-    return $platform;
-  }
-
-  /**
-   * Returns saved videos from playlists
-   * @param string $channel_id [filters the results to only playlists belonging to the provided channel]
-   */
-  public static function get_dbd_videos_list($channel_id = null)
-  {
-    $videos = array();
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'playlists';
-    if (isset($channel_id) && !empty($channel_id)) :
-      error_log("Getting videos for Playlists Channel Id requested was: " . json_encode($channel_id));
-      $playlists = $wpdb->get_results("SELECT * FROM {$table_name} WHERE channel_id = '{$channel_id}'");
-    else :
-      $playlists = $wpdb->get_results("SELECT * FROM {$table_name}");
-    endif;
-    // Pull resource ids from VideoList in playlists table
-    foreach ($playlists as $playlist) {
-      $items = json_decode($playlist->VideoList);
-      foreach ($items as $video) {
-        if (isset($videos[$video])) :
-          $videos[$video]->{$playlist->Title} = $playlist->PlaylistId;
-        else :
-          $videos[$video] = (object) array(
-            "video" => $video, // resource id in youtube post types
-            $playlist->Title => $playlist->PlaylistId
-          );
-        endif;
-      }
-    }
-    return $videos;
   }
 
   /**

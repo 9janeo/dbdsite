@@ -1,9 +1,6 @@
 wp-config.php
 .DS_Store
 
-wp-admin/*
-wp-includes/*
-
 wp-content/.DS_Store
 wp-content/upgrade/*
 wp-content/uploads/*
@@ -24,6 +21,8 @@ wp-content/themes/dbdtheme/dist
 wp-content/themes/dbdtheme/dist-product
 wp-content/themes/dbdtheme/npm-debug.log
 wp-content/themes/dbdtheme/vendor/
+
+!wp-content/plugins/
 
 wp-content/plugins/*
 !wp-content/plugins/cc-vortex

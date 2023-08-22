@@ -7,12 +7,6 @@
  */
 function dis_by_dem_video_info($post_id, $videoID)
 {
-  // ToDo: Make sure this is a YouTube post or return
-  if (get_post_type($post_id) != 'youtube') {
-    print_r("not a YouTube post");
-    error_log("not a YouTube post");
-  }
-
   // get existing meta from post_id
   $post_etag = get_post_meta($post_id, 'etag', true);
   if ((gettype($videoID) == 'object') || empty($videoID)) {
@@ -65,26 +59,26 @@ function dis_by_dem_video_info($post_id, $videoID)
       }
 
       //Pull tags from YT and add them to existing post tags
-      // if (isset($vid_tags) && $vid_tags) {
-      //   // $post_tags = get_the_tags($post_id);
-      //   $post_tags = array();
-      //   foreach (get_the_tags($post_id) as $term) {
-      //     $post_tags[] = $term->name;
-      //   }
-      //   // $post_tags = get_tags($post_id);
-      //   error_log("Current post tags " . json_encode($post_tags) . " for post $post_id \n");
-      //   $new_tags = [];
-      //   foreach ($vid_tags as $tag) {
-      //     if (empty($post_tags) || !in_array($tag, $post_tags)) {
-      //       error_log("Check if vid tag " . $tag . " in post tags for post $post_id " . (in_array($tag, $post_tags) ? '-yes' : '-no') . "\n");
-      //       $new_tags[] = $tag;
-      //     }
-      //   }
-      //   if (!empty($new_tags)) {
-      //     wp_set_post_tags($post_id, $new_tags, true);
-      //     error_log("Added " . json_encode($new_tags) . " tags to $post_id \n");
-      //   }
-      // }
+      if (isset($vid_tags) && $vid_tags) {
+        // $post_tags = get_the_tags($post_id);
+        $post_tags = array();
+        foreach (get_the_tags($post_id) as $term) {
+          $post_tags[] = $term->name;
+        }
+        // $post_tags = get_tags($post_id);
+        error_log("Current post tags " . json_encode($post_tags) . " for post $post_id \n");
+        $new_tags = [];
+        foreach ($vid_tags as $tag) {
+          if (empty($post_tags) || !in_array($tag, $post_tags)) {
+            error_log("Check if vid tag " . $tag . " in post tags for post $post_id " . (in_array($tag, $post_tags) ? '-yes' : '-no') . "\n");
+            $new_tags[] = $tag;
+          }
+        }
+        if (!empty($new_tags)) {
+          wp_set_post_tags($post_id, $new_tags, true);
+          error_log("Added " . json_encode($new_tags) . " tags to $post_id \n");
+        }
+      }
     }
   }
 

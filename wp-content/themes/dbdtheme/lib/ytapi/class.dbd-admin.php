@@ -18,6 +18,7 @@ class Dbd_Admin
     }
     require_once(get_stylesheet_directory() . '/vendor/autoload.php');
 
+    // require_once('yt-service.php');
     require_once('class.dbd-youtube.php');
     require_once('class.dbd-menu.php');
     require_once('class.dbd-settings.php');
@@ -40,6 +41,13 @@ class Dbd_Admin
     add_action('admin_init', array('DBD_Channels', 'ready_channels_table_into_db'));
     add_action('admin_init', array('DBD_settings', 'dbd_register_settings'));
     add_action('admin_init', array('DBD_Channels', 'dbd_register_channel_settings'));
+
+    // load client
+    // set up client scopes
+    // set client Access type
+    // load client service account credentials from json
+    // get channel Id
+    // Get channel username
   }
 
   public static function display_start_page()
@@ -122,31 +130,28 @@ class Dbd_Admin
     if (isset($playlists) && $playlists) :
       if (!isset($playlists['error'])) : ?>
         <div class="yt playlists row row-cols-3">
-          <?php
-          $listIds = array();
+          <?php $videos = (object) array();
           foreach ($playlists as $key => $playlist) :
+            var_dump($playlist);
             // error_log("Displaying for " . json_encode($playlist));
             $id = isset($playlist->snippet) ? $playlist->id : $playlist->PlaylistId;
             $itemCount = isset($playlist->contentDetails) ? $playlist->contentDetails->itemCount : $playlist->VideoList;
             $items = isset($playlist->items) ? $playlist->items : json_decode($playlist->VideoList);
             if (isset($itemCount) && !($itemCount > 0)) {
               continue; # skip playlist if no items in it
-            }
-          ?>
+            } ?>
             <div class="card pl_<?= $key + 1 ?> mb-3">
               <?php get_template_part('lib/youtube-templates/playlists', 'playlists', $playlist); ?>
               <div class="card-footer py-2">
                 <?php
                 if ($listvideo == true && isset($items) && $items) :
                   // if listvideo parameter is true get the playlist items
-                  foreach ($items as $item) {
-                    $listIds[$item][$playlist->Title] = $id;
-                  }
+                  $videos = $items;
                 ?>
                   <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-target="#list_<?php echo $id; ?>" data-bs-target="#list_<?php echo $id; ?>" aria-expanded="false" aria-controls="collapseVideoList">Toggle list
                   </button>
                   <div id="list_<?php echo $id ?>" class="collapse playlist mt-2">
-                    <?php get_template_part('lib/youtube-templates/video_list', 'video_list', $items); ?>
+                    <?php get_template_part('lib/youtube-templates/video_list', 'video_list', $videos); ?>
                   </div>
                 <?php endif; ?>
               </div>

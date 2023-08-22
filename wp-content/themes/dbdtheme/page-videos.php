@@ -14,8 +14,11 @@
  * @package Understrap
  */
 
+use Google\Service\YouTube\Resource\Playlists;
+
 // Exit if accessed directly.
 defined('ABSPATH') || exit;
+
 
 get_header();
 $container = get_theme_mod('understrap_container_type');
@@ -31,22 +34,34 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
       <div id="transients" class="row collapse">
         <?php
         $channel_playlists = get_transient('channel_playlists');
+        // var_dump($channel_playlists);
         if (isset($channel_playlists) && $channel_playlists) :
           Dbd_Admin::display_playlists($channel_playlists, true);
+        /* foreach ($channel_playlists as $pl) :
+            $itemCount = $pl->contentDetails->itemCount;
+            if (!($itemCount > 0)) {
+              // skip empty playlist
+              continue;
+            }
+            $playlist_items = Dbd_Youtube::get_playlist_items($pl->id);
+            $args = array('playlist' => $pl, 'videos' => $playlist_items);
+            get_template_part('lib/youtube-templates/playlists', 'playlists', $args); 
+          endforeach; */
         else :
           echo "<h4>There are no current transients for Channel Playlists</h4>";
         endif;
+
+        // PLgHIZMXekZton6SBh4A8aXs2-koNW9cgP -> Legendary -> Item count 0
+        // PLgHIZMXekZtogiiHWtMryQ_SCRk5z4PbC -> Shorts -> item count 42
+        // PLgHIZMXekZtq9VRdfgIRSBIEBLegs2JW8 -> Book Reviews -> item count 2 || Videos not accessible, private videos
         ?>
       </div>
     </div>
     <div class="row">
       <h2 class="header" data-bs-toggle="collapse" data-bs-target="#videos" aria-expanded="false" aria-controls="collapseVideos">Videos</h2>
       <hr>
-      <div id="videos" class="row collapse show">
-        <?php
-        $channels = DBD_Channels::get_dbd_channels('youtube');
-        $video_list = Dbd_Youtube::get_dbd_videos_list($channels[0]->channel_id);
-        ?>
+      <div id="videos" class="row collapse">
+        <?php $video_list =  Dbd_Youtube::get_all_videos(); ?>
         <table class="table">
           <thead>
             <tr>
@@ -56,7 +71,10 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
             </tr>
           </thead>
           <tbody class="table">
-            <?php get_template_part('lib/youtube-templates/video_list', 'video_list', array_keys($video_list)); ?>
+            <?php foreach ($video_list as $video) {
+              get_template_part('lib/youtube-templates/video', 'video', $video);
+              // get_template_part('loop-templates/content', 'card', $video);
+            } ?>
           </tbody>
         </table>
       </div>
@@ -64,7 +82,7 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
     <div class="row">
       <h2 class="header" data-bs-toggle="collapse" data-bs-target="#playlist-section" aria-expanded="false" aria-controls="collapsePlayist">Playlists</h2>
       <hr>
-      <div id="playlist-section" class="yt playlists collapse">
+      <div id="playlist-section" class="yt playlists collapse show">
         <?php
         $channels = DBD_Channels::get_dbd_channels('youtube');
         // $playlists = Dbd_Youtube::get_playlists_with_items($channels[0]->channel_id);
