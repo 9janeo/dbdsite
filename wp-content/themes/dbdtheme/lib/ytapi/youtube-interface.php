@@ -68,6 +68,7 @@ function load_videos($channel_id, $client, $service)
   return $response;
 }
 
+$client->setAuthConfig(__DIR__ . '/../client_secret.json');
 
 
 /**
