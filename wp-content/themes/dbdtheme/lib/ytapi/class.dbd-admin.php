@@ -40,6 +40,7 @@ class Dbd_Admin
     add_action('admin_init', array('DBD_Channels', 'ready_channels_table_into_db'));
     add_action('admin_init', array('DBD_settings', 'dbd_register_settings'));
     add_action('admin_init', array('DBD_Channels', 'dbd_register_channel_settings'));
+    add_action('admin_init', array('DBD_Youtube', 'create_channel_playlists'));
   }
 
   public static function display_start_page()

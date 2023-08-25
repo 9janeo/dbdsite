@@ -83,7 +83,7 @@ class Dbd_Youtube
 
     $table_name = $wpdb->prefix . 'playlists';
 
-    $sql = "CREATE TABLE `{$table_name}` (
+    $sql = "CREATE TABLE IF NOT EXISTS `{$table_name}` (
       ID int NOT NULL Auto_INCREMENT,
       PlaylistId VARCHAR(50),
       Title VARCHAR(50),
@@ -98,7 +98,7 @@ class Dbd_Youtube
       Updated DATETIME,
       PRIMARY KEY (id),
       UNIQUE KEY (PlaylistId),
-      FOREIGN KEY (channel_id) REFERENCES wp_channels(channel_id)
+      FOREIGN KEY (channel_id) REFERENCES {$wpdb->prefix}channels(channel_id)
     ) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
