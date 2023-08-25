@@ -106,18 +106,18 @@ function understrap_child_customize_controls_js()
 add_action('customize_controls_enqueue_scripts', 'understrap_child_customize_controls_js');
 
 // Error logs wp_remote calls
-if (!function_exists('debug_wp_remote_post_and_get_request')) :
-  function debug_wp_remote_post_and_get_request($response, $context, $class, $r, $url)
-  {
-    error_log('----------------External post or get request----------------');
-    error_log($url);
-    error_log(json_encode($response));
-    // error_log($class);
-    // error_log($context);
-    // error_log(json_encode($r));
-  }
-  add_action('http_api_debug', 'debug_wp_remote_post_and_get_request', 10, 5);
-endif;
+// if (!function_exists('debug_wp_remote_post_and_get_request')) :
+//   function debug_wp_remote_post_and_get_request($response, $context, $class, $r, $url)
+//   {
+//     error_log('----------------External post or get request----------------');
+//     error_log($url);
+//     error_log(json_encode($response));
+//     // error_log($class);
+//     // error_log($context);
+//     // error_log(json_encode($r));
+//   }
+//   add_action('http_api_debug', 'debug_wp_remote_post_and_get_request', 10, 5);
+// endif;
 
 if (function_exists('acf_add_options_page')) {
 

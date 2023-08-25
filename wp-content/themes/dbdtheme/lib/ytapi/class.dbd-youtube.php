@@ -407,10 +407,7 @@ class Dbd_Youtube
             continue;
           }
           array_push($public, $item);
-          if ($index == 1) {
-            // array_push($posts, $post);
-            // self::dbd_save_video_as_youtube_post($item, $title);
-          }
+          self::dbd_save_video_as_youtube_post($item, $title);
         }
         if (!(count($public) > 0)) {
           // skip playlist if there are no public videos
@@ -422,8 +419,7 @@ class Dbd_Youtube
           "title"   => $item->snippet->title,
           "videos" => $filtered_items
         );
-        // send batch videos to save or sync
-        // self::dbd_save_video_as_youtube_post($item, $title);
+
         $url = self::get_resource_url($playlist, 'playlist', $id);
         $playlist->url = $url;
         // sync tags of posts that belong to this playlist
@@ -500,7 +496,7 @@ class Dbd_Youtube
   }
 
   /**
-   * Returns the platform fomr the channel ID provided
+   * Returns the platform from the channel ID provided
    * @param string $channel_id
    */
   public static function get_channel_platform($channel_id)
