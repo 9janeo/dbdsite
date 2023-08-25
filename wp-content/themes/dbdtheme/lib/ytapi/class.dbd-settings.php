@@ -197,7 +197,7 @@ class DBD_Settings
     );
 
     $platfom_options = array(
-      'default'   => esc_html__('YouTube',  'disbydem'),
+      'youtube'   => esc_html__('YouTube',  'disbydem'),
       'tiktok'      => esc_html__('TikTok',    'disbydem'),
       'instagram'    => esc_html__('Instagram',    'disbydem'),
       'facebook' => esc_html__('Facebook',  'disbydem'),
