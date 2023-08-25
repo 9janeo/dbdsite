@@ -7,12 +7,7 @@
  */
 function dis_by_dem_video_info($post_id, $videoID)
 {
-  // ToDo: Make sure this is a YouTube post or return
-  if (get_post_type($post_id) != 'youtube') {
-    print_r("not a YouTube post");
-    error_log("not a YouTube post");
-  }
-
+  // ToDo: Make sure this is a YouTube post first
   // get existing meta from post_id
   $post_etag = get_post_meta($post_id, 'etag', true);
   if ((gettype($videoID) == 'object') || empty($videoID)) {
