@@ -58,28 +58,31 @@ function dis_by_dem_video_info($post_id, $videoID)
       foreach ($metaValues as $metaKey => $metaValue) {
         update_post_meta($post_id, $metaKey, $metaValue);
       }
+    }
 
-      //Pull tags from YT and add them to existing post tags
-      // if (isset($vid_tags) && $vid_tags) {
-      //   // $post_tags = get_the_tags($post_id);
-      //   $post_tags = array();
-      //   foreach (get_the_tags($post_id) as $term) {
-      //     $post_tags[] = $term->name;
-      //   }
-      //   // $post_tags = get_tags($post_id);
-      //   error_log("Current post tags " . json_encode($post_tags) . " for post $post_id \n");
-      //   $new_tags = [];
-      //   foreach ($vid_tags as $tag) {
-      //     if (empty($post_tags) || !in_array($tag, $post_tags)) {
-      //       error_log("Check if vid tag " . $tag . " in post tags for post $post_id " . (in_array($tag, $post_tags) ? '-yes' : '-no') . "\n");
-      //       $new_tags[] = $tag;
-      //     }
-      //   }
-      //   if (!empty($new_tags)) {
-      //     wp_set_post_tags($post_id, $new_tags, true);
-      //     error_log("Added " . json_encode($new_tags) . " tags to $post_id \n");
-      //   }
-      // }
+    //Pull tags from YT and add them to existing post tags
+    if (isset($vid_tags) && $vid_tags) {
+      $current_tags = get_the_tags($post_id);
+      $post_tags = array();
+      foreach ($current_tags as $term) {
+        $post_tags[] = $term->name;
+      }
+      // $post_tags = get_tags($post_id);
+      error_log("Current post tags " . json_encode($post_tags) . " for post $post_id \n");
+      $new_tags = [];
+      foreach ($vid_tags as $tag) {
+        if (empty($post_tags) || !in_array($tag, $post_tags)) {
+          error_log("Check if vid tag " . $tag . " in post tags for post $post_id " . (in_array($tag, $post_tags) ? '-yes' : '-no') . "\n");
+          $new_tags[] = $tag;
+        }
+      }
+      if (!empty($new_tags)) {
+        wp_set_post_tags($post_id, $new_tags, true);
+        error_log("Added " . json_encode($new_tags) . " tags to $post_id \n");
+      }
+      // set featured image using YT thumbnail
+      // - download image and save as attachement
+      // - set attachment as post featured image
     }
   }
 
