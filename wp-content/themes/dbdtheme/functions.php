@@ -119,6 +119,18 @@ add_action('customize_controls_enqueue_scripts', 'understrap_child_customize_con
 //   add_action('http_api_debug', 'debug_wp_remote_post_and_get_request', 10, 5);
 // endif;
 
+// Include custom post types in archive pages
+function custom_post_type_cat_filter($query)
+{
+  if (!is_admin() && $query->is_main_query()) {
+    if (is_archive()) {
+      $query->set('post_type', array('post', 'youtube-post'));
+    }
+  }
+}
+
+add_action('pre_get_posts', 'custom_post_type_cat_filter');
+
 if (function_exists('acf_add_options_page')) {
 
   acf_add_options_page(array(
