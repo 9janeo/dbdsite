@@ -123,7 +123,7 @@ add_action('customize_controls_enqueue_scripts', 'understrap_child_customize_con
 function custom_post_type_cat_filter($query)
 {
   if (!is_admin() && $query->is_main_query()) {
-    if (is_archive()) {
+    if (is_archive() || is_home()) {
       $query->set('post_type', array('post', 'youtube-post'));
     }
   }

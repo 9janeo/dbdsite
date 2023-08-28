@@ -15,17 +15,11 @@ defined('ABSPATH') || exit;
   // Check for YT thumbnail if vid added to post
   // To do: add this as featured image when video link added
   $vid_exists = metadata_exists('post', get_the_ID(), 'video_link');
-  // if ($vid_exists) :
-  // 	$yt_meta = get_post_meta( get_the_ID() ,'video_info')[0];
-  // 	$yt_thumb = $yt_meta->thumbnails->high->url;
-  // else:
-  // 	$yt_thumb = false;
-  // endif;
 
-  // // Load default fallback post thumbnail
-  // $cover_id = get_field('post_card_cover', 'option');
+  // Load default fallback post thumbnail
+  $cover_id = get_field('post_card_cover', 'option');
 
-  $yt_thumb = get_post_meta(get_the_ID(), 'video_thumb')[0];
+  $yt_thumb = get_post_meta(get_the_ID(), 'video_thumb', true);
   $cover_image = ($yt_thumb) ? $yt_thumb : wp_get_attachment_url($cover_id);
   $feat_image_url = wp_get_attachment_url(get_post_thumbnail_id());
   $has_thumb = (has_post_thumbnail()) ? true : false;

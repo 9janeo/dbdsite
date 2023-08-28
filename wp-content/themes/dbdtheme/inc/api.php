@@ -25,7 +25,6 @@ function dis_by_dem_video_info($post_id, $videoID)
     $item = $result->items[0];
     $vid_snippet = $item->snippet;
     error_log("===== hit dis_by_dem_video_info vid_snippet =====\n");
-    // error_log(json_encode($vid_snippet));
     $vid_tags = $vid_snippet->tags;
     // prepare schema values
     $thumb = 'https://i.ytimg.com/vi/' . $videoID . '/hqdefault.jpg';
@@ -33,19 +32,10 @@ function dis_by_dem_video_info($post_id, $videoID)
     $description = 'Created by Tale Adewole';
     $published = get_the_date();
     $upload_date = date("Y-m-d", strtotime($published));
-    // build schema for video
-    // $vid_schema = array(
-    //   '@type'         => 'VideoObject',
-    //   '@id'           => $hostname . '#/schema/VideoObject/{{' . $id . '}}',
-    //   'name'           => $name,
-    //   'description'   => $description,
-    //   'thumbnail'     => $thumb,
-    //   'uploadDate'     => $upload_date
-    // );
 
     // Only do this if post etag is empty or different
     if (isset($post_etag) && $post_etag !== $item->etag) {
-      // Set both video schema and info meta:
+      // Set video meta info:
       $metaValues = array(
         // 'post_video_schema' => $vid_schema,
         'video_info' => $vid_snippet->description,
@@ -84,6 +74,17 @@ function dis_by_dem_video_info($post_id, $videoID)
       // - download image and save as attachement
       // - set attachment as post featured image
     }
+
+    // build schema for video schema
+    // $vid_schema = array(
+    //   '@type'         => 'VideoObject',
+    //   '@id'           => $hostname . '#/schema/VideoObject/{{' . $id . '}}',
+    //   'name'           => $name,
+    //   'description'   => $description,
+    //   'thumbnail'     => $thumb,
+    //   'uploadDate'     => $upload_date
+    // );
+
   }
 
   // endif;
