@@ -292,8 +292,6 @@ class Dbd_Youtube
       'maxResults' => 25
     ];
 
-    error_log("Attempting API playlist call and save!");
-
     try {
       $channel_playlists = self::$service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
       $playlists = array();
