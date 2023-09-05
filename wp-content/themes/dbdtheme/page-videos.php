@@ -42,7 +42,7 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
     <div class="row">
       <h2 class="header" data-bs-toggle="collapse" data-bs-target="#videos" aria-expanded="false" aria-controls="collapseVideos">Videos</h2>
       <hr>
-      <div id="videos" class="row collapse">
+      <div id="videos" class="row collapse show">
         <?php
         $channels = DBD_Channels::get_dbd_channels('youtube');
         $video_list = Dbd_Youtube::get_dbd_videos_list($channels[0]->channel_id);
@@ -64,10 +64,9 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
     <div class="row">
       <h2 class="header" data-bs-toggle="collapse" data-bs-target="#playlist-section" aria-expanded="false" aria-controls="collapsePlayist">Playlists</h2>
       <hr>
-      <div id="playlist-section" class="yt playlists collapse show">
+      <div id="playlist-section" class="yt playlists collapse">
         <?php
         $channels = DBD_Channels::get_dbd_channels('youtube');
-        // $playlists = Dbd_Youtube::get_playlists_with_items($channels[0]->channel_id);
         $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
         if (isset($playlists) && $playlists) :
           Dbd_Admin::display_playlists($playlists, true);
