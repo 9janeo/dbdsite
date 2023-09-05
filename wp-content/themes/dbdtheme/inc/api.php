@@ -124,6 +124,9 @@ function dis_by_dem_video_info($post_id, $videoID)
       }
     }
 
+    // Go through publish checklist
+    dbd_publish_checklist($post_id);
+
     // set featured image using YT thumbnail
     // - download image and save as attachement
     // - set attachment as post featured image
@@ -153,5 +156,25 @@ function dis_by_dem_strip_meta_info($post_id)
   foreach ($metaValues as $metaKey) {
     delete_post_meta($post_id, $metaKey);
     error_log("cleared $metaKey from $post_id");
+  }
+}
+
+/**
+ * Checks a list of critera and updates post status from draft to publish if met
+ * @param [int] $post_id [description]
+ */
+function dbd_publish_checklist($post_id)
+{
+  // if meta has values for 
+  $has_video_id = metadata_exists('post', $post_id, 'video_id');
+  $has_video_schema = metadata_exists('post', $post_id, 'post_video_schema');
+  $has_tags = has_tag('', $post_id);
+  if ($has_video_id && $has_video_schema && $has_tags) {
+    // check post status is not published
+    if (get_post_status($post_id) != 'published' && get_post_type($post_id) == 'youtube-post') {
+      error_log("Checklist items confirmed, publishing... " . $post_id);
+      $yt_post = array('ID' => $post_id, 'post_status' => 'published');
+      wp_update_post($yt_post);
+    }
   }
 }
