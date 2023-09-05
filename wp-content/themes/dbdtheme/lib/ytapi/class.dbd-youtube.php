@@ -30,15 +30,9 @@ class Dbd_Youtube
   private static function init_hooks()
   {
     self::$initiated = true;
-
     // load client
     self::$client = self::load_client();
     self::$service = self::load_service();
-    // set up client scopes
-    // set client Access type
-    // load client service account credentials from json
-    // get channel Id
-    // Get channel username
   }
 
   /**
@@ -83,12 +77,12 @@ class Dbd_Youtube
 
     $table_name = $wpdb->prefix . 'playlists';
 
-    $sql = "CREATE TABLE `{$table_name}` (
+    $sql = "CREATE TABLE IF NOT EXISTS `{$table_name}` (
       ID int NOT NULL Auto_INCREMENT,
       PlaylistId VARCHAR(50),
       Title VARCHAR(50),
       ItemCount INT,
-      Details VARCHAR(50),
+      Details TEXT,
       Thumbnail  VARCHAR (100),
       VideoList VARCHAR (4000),
       PlaylistUrl VARCHAR (100),
@@ -98,7 +92,7 @@ class Dbd_Youtube
       Updated DATETIME,
       PRIMARY KEY (id),
       UNIQUE KEY (PlaylistId),
-      FOREIGN KEY (channel_id) REFERENCES wp_channels(channel_id)
+      FOREIGN KEY (channel_id) REFERENCES {$wpdb->prefix}channels(channel_id)
     ) $charset_collate;";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -119,14 +113,11 @@ class Dbd_Youtube
     $table_name = $wpdb->prefix . 'playlists';
 
     if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name)) != $table_name) {
-      error_log('Table does not exist' . ': ' . print_r($table_name, true));
-      error_log('Create ' . print_r($table_name, true) . ' table');
       self::create_channel_playlists();
     }
-    error_log('Table exists' . ': ' . print_r($table_name, true));
 
     foreach ($playlists as $pl) {
-      $filtered_items = array_map('Dbd_Youtube::pull_item_ids', $pl->items);
+      $filtered_items = $pl->items ? array_map('Dbd_Youtube::pull_item_ids', $pl->items) : [];
       $data_ = array(
         'PlaylistId' => $pl->id,
         'Title' => $pl->snippet->title,
@@ -147,9 +138,6 @@ class Dbd_Youtube
         $result = $wpdb->insert($table_name, $data_, array('%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'));
         if (false === $result) {
           print_r($wpdb->last_error);
-          // wp_die('Failed to add playlist');
-        } else {
-          echo "Playlist " . $pl->id . " added to database";
         }
       } else {
         // If playlist exists already, update with new values in $data_ instead
@@ -176,9 +164,8 @@ class Dbd_Youtube
     $affected = "No";
     // Compare db entry and current $playlist
     foreach ($playlist as $col => $newVal) {
-      // if the same exit
+      // if different, add column to update fields
       if (($check->{$col} != $newVal) && ($col != "Created") && ($col != "Updated")) {
-        // if different, add column to update fields
         $updateCols[$col] = $newVal;
       }
     }
@@ -188,88 +175,13 @@ class Dbd_Youtube
       $affected = json_encode(array_keys($updateCols));
       if (false === $update) {
         write_log($wpdb->last_error);
+        write_log("Channel Affected: " . $affected);
         print_r($wpdb->last_error);
       }
     }
-    write_log("Channel " . $check->Title . " $affected" . " fields updated <br>\n");
   }
 
   // Playlist Videos ***********************
-  /**
-   * Create YouTube post from playlist item
-   * @param object $item [Playlist item/video from API call]
-   * @param object $plTitle [Playlist title from which item was retrieved]
-   *
-   */
-  public static function dbd_save_video_as_youtube_post($item, $plTitle)
-  {
-    // prep the video for wp_posts custom post type
-    $snippet = $item->snippet;
-    $title = $snippet->title;
-    $content = $snippet->description;
-    $date = $snippet->publishedAt;
-    $videoID = $item->contentDetails->videoId;
-    $cat_id = get_cat_ID($plTitle);
-    $videoLink = "https://www.youtube.com/watch?v={$videoID}&ab_channel=DISBYDEM";
-
-    $embedBlock = "<!-- wp:embed {\"url\":\"{$videoLink}\",\"type\":\"video\",\"providerNameSlug\":\"youtube\",\"responsive\":true,\"className\":\"wp-embed-aspect-16-9 wp-has-aspect-ratio\"} --><figure class=\"wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio\"><div class=\"wp-block-embed__wrapper\">{$videoLink}</div></figure><!-- /wp:embed -->";
-
-    $content = $embedBlock . $content;
-
-    // check if post exists
-    $post_id = post_exists($title);
-
-    $yt_post = array(
-      'ID'        => $post_id,
-      'post_type' => 'youtube-post',
-      'post_title' => $title,
-      'post_content' => $content,
-      'post_date'    => $date,
-      'post_date_gmt'    => get_gmt_from_date($date),
-      'post_category' => array($cat_id),
-      'comment_status' => 'closed',
-      'ping_status' => 'open'
-    );
-    if ($post_id !== 0) {
-      // check for meta/differences
-      // update post with any new changes
-      $update = wp_update_post($yt_post);
-      update_post_meta($post_id, 'video_id', $videoID);
-      if ($update) {
-        // dis_by_dem_strip_meta_info($post_id);
-        // set as a cron job with 5 minute intervals
-        // dis_by_dem_video_info($post_id, $videoID);
-        $args = array($post_id, $videoID);
-        error_log('Scheduling meta and tag updates for wp_post ' . $post_id . ' | yt video id ' . $videoID . ' in playlist' . $plTitle);
-
-        if (!wp_next_scheduled('dbd_schedule_video_meta_and_tag_update')) {
-          wp_schedule_single_event(time() + 300, 'dbd_schedule_video_meta_and_tag_update', $args);
-        } else {
-          $last_job = wp_next_scheduled('dbd_schedule_video_meta_and_tag_update');
-          wp_schedule_single_event($last_job + 300, 'dbd_schedule_video_meta_and_tag_update', $args);
-        }
-      }
-    } else {
-      $post_id = wp_insert_post($yt_post);
-      update_post_meta($post_id, 'video_id', $videoID);
-    }
-    // return print_r("No videos saved");
-  }
-
-  /**
-   * Sync the post tags with the tags on YouTube using the corresponding video IDs
-   * @param array $posts [Accepts an array the WP posts with the post_id and title keys to sync (optional)]
-   * @param object $plTitle [Playlist title from which item was retrieved]
-   * @param array $videos [Accepts an array of video ids from a playlist to retrieve tags and add to WP post]
-   *
-   */
-  public static function dbd_sync_youtube_post_tags($posts, $plTitle)
-  {
-    // get the post id from title
-    error_log("================The dbd_sync_youtube_post_tags function for " . json_encode($posts) . " and $plTitle================\n");
-  }
-
-
   /**
    * Returns the videos for a channel
    * @param  mixed  $service      [Youtube service]
@@ -380,8 +292,6 @@ class Dbd_Youtube
       'maxResults' => 25
     ];
 
-    error_log("Attempting API playlist call and save!");
-
     try {
       $channel_playlists = self::$service->playlists->listPlaylists('snippet,contentDetails,status', $queryParams);
       $playlists = array();
@@ -407,10 +317,7 @@ class Dbd_Youtube
             continue;
           }
           array_push($public, $item);
-          if ($index == 1) {
-            // array_push($posts, $post);
-            // self::dbd_save_video_as_youtube_post($item, $title);
-          }
+          $item->wp_id = self::dbd_save_video_as_youtube_post($item, $title);
         }
         if (!(count($public) > 0)) {
           // skip playlist if there are no public videos
@@ -422,20 +329,67 @@ class Dbd_Youtube
           "title"   => $item->snippet->title,
           "videos" => $filtered_items
         );
-        // send batch videos to save or sync
-        // self::dbd_save_video_as_youtube_post($item, $title);
+
         $url = self::get_resource_url($playlist, 'playlist', $id);
         $playlist->url = $url;
-        // sync tags of posts that belong to this playlist
-        self::dbd_sync_youtube_post_tags($posts, $title);
       }
       // Save or update Playlist in DB
       self::save_playlists($playlists);
 
+      // Schedule post updates
+      schedule_video_details_update($playlists);
+
       return $playlists;
     } catch (Exception $e) {
+      error_log('Message: ' . $e->getMessage());
       echo 'Message: ' . $e->getMessage();
     }
+  }
+
+  /**
+   * 
+   * Create YouTube post from playlist item
+   * @param object $item [Playlist item/video from API call]
+   * @param string $plTitle [Playlist title from which item was retrieved]
+   * 
+   */
+  public static function dbd_save_video_as_youtube_post($item, $plTitle)
+  {
+    // prep the video for wp_posts custom post type
+    $snippet = $item->snippet;
+    $title = $snippet->title;
+    $content = $snippet->description;
+    $date = $snippet->publishedAt;
+    $videoID = $item->contentDetails->videoId;
+    $cat_id = get_cat_ID($plTitle);
+    $videoLink = "https://www.youtube.com/watch?v={$videoID}&ab_channel=DISBYDEM";
+    $embedBlock = "
+      $videoLink
+    ";
+    $content = $embedBlock . $content;
+
+    // check if post exists
+    $post_id = post_exists($title);
+
+    $yt_post = array(
+      'ID'        => $post_id,
+      'post_type' => 'youtube-post',
+      'post_title' => $title,
+      'post_content' => $content,
+      'post_date'    => $date,
+      'post_date_gmt'    => get_gmt_from_date($date),
+      'post_category' => array($cat_id),
+      'comment_status' => 'closed',
+      'ping_status' => 'open'
+    );
+    if ($post_id !== 0) {
+      // update post with any new changes
+      wp_update_post($yt_post);
+    } else {
+      $post_id = wp_insert_post($yt_post);
+    }
+    update_post_meta($post_id, 'video_id', $videoID);
+    return $post_id;
   }
 
   /**
@@ -491,7 +445,6 @@ class Dbd_Youtube
     global $wpdb;
     $table_name = $wpdb->prefix . 'playlists';
     if (isset($channel_id) && !empty($channel_id)) :
-      error_log("Playlists Channel Id requested was: " . $channel_id);
       $playlists = $wpdb->get_results("SELECT * FROM {$table_name} WHERE channel_id = '{$channel_id}'");
     else :
       $playlists = $wpdb->get_results("SELECT * FROM {$table_name}");
@@ -500,7 +453,7 @@ class Dbd_Youtube
   }
 
   /**
-   * Returns the platform fomr the channel ID provided
+   * Returns the platform from the channel ID provided
    * @param string $channel_id
    */
   public static function get_channel_platform($channel_id)
@@ -521,7 +474,6 @@ class Dbd_Youtube
     global $wpdb;
     $table_name = $wpdb->prefix . 'playlists';
     if (isset($channel_id) && !empty($channel_id)) :
-      error_log("Getting videos for Playlists Channel Id requested was: " . json_encode($channel_id));
       $playlists = $wpdb->get_results("SELECT * FROM {$table_name} WHERE channel_id = '{$channel_id}'");
     else :
       $playlists = $wpdb->get_results("SELECT * FROM {$table_name}");
@@ -529,15 +481,17 @@ class Dbd_Youtube
     // Pull resource ids from VideoList in playlists table
     foreach ($playlists as $playlist) {
       $items = json_decode($playlist->VideoList);
-      foreach ($items as $video) {
-        if (isset($videos[$video])) :
-          $videos[$video]->{$playlist->Title} = $playlist->PlaylistId;
-        else :
-          $videos[$video] = (object) array(
-            "video" => $video, // resource id in youtube post types
-            $playlist->Title => $playlist->PlaylistId
-          );
-        endif;
+      if ((gettype($items) == 'object')) {
+        foreach ($items as $video) {
+          if (isset($videos[$video])) :
+            $videos[$video]->{$playlist->Title} = $playlist->PlaylistId;
+          else :
+            $videos[$video] = (object) array(
+              "video" => $video, // resource id in youtube post types
+              $playlist->Title => $playlist->PlaylistId
+            );
+          endif;
+        }
       }
     }
     return $videos;

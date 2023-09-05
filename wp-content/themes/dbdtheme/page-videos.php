@@ -26,39 +26,47 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
 <div class="wrapper" id="videos-wrapper">
   <div class="<?php echo esc_attr($container); ?>" id="content" tabindex="-1">
     <div class="row">
-      <h2 class="header" data-bs-toggle="collapse" data-bs-target="#transients" aria-expanded="true" aria-controls="collapseTransients">Transients</h2>
-      <hr>
-      <div id="transients" class="row collapse">
-        <?php
-        $channel_playlists = get_transient('channel_playlists');
-        if (isset($channel_playlists) && $channel_playlists) :
-          Dbd_Admin::display_playlists($channel_playlists, true);
-        else :
-          echo "<h4>There are no current transients for Channel Playlists</h4>";
-        endif;
-        ?>
-      </div>
-    </div>
-    <div class="row">
       <h2 class="header" data-bs-toggle="collapse" data-bs-target="#videos" aria-expanded="false" aria-controls="collapseVideos">Videos</h2>
       <hr>
-      <div id="videos" class="row collapse show">
+      <div id="videos" class="collapse show">
         <?php
         $channels = DBD_Channels::get_dbd_channels('youtube');
         $video_list = Dbd_Youtube::get_dbd_videos_list($channels[0]->channel_id);
+        // $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+        $args = array(
+          'post_type' => 'youtube-post',
+          'posts_per_page' => 5,
+          'paged' => $paged,
+          'meta_query' => array(
+            'key' => 'video_id',
+            'value' => $video_list,
+            'compare' => 'IN',
+          ),
+        );
+        $vid_query = new WP_Query($args); ?>
+
+        <main class="site-main" id="main">
+          <?php if ($vid_query->have_posts()) : ?>
+            <div class="post-list card-deck row">
+              <?php
+              while ($vid_query->have_posts()) : ?>
+                <div class="list-item col-lg-4 col-md-6">
+                  <?php
+                  $vid_query->the_post();
+                  get_template_part('loop-templates/content', 'card');
+                  ?>
+                </div>
+              <?php
+              endwhile; ?>
+            </div>
+          <?php else : ?>
+            <p><?php esc_html_e('Sorry, no YouTube posts matching your criteria found.'); ?></p>
+          <?php endif; ?>
+        </main>
+        <?php
+        understrap_pagination(array('total' => $vid_query->max_num_pages));
+        wp_reset_postdata();
         ?>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Title</th>
-              <th scope="col">Views</th>
-              <th scope="col">Analytics</th>
-            </tr>
-          </thead>
-          <tbody class="table">
-            <?php get_template_part('lib/youtube-templates/video_list', 'video_list', array_keys($video_list)); ?>
-          </tbody>
-        </table>
       </div>
     </div>
     <div class="row">
@@ -67,7 +75,6 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
       <div id="playlist-section" class="yt playlists collapse">
         <?php
         $channels = DBD_Channels::get_dbd_channels('youtube');
-        // $playlists = Dbd_Youtube::get_playlists_with_items($channels[0]->channel_id);
         $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
         if (isset($playlists) && $playlists) :
           Dbd_Admin::display_playlists($playlists, true);
