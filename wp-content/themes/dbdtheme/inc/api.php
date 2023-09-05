@@ -68,6 +68,9 @@ function dis_by_dem_video_info($post_id, $videoID)
       $item = $result->items[0];
       $vid_snippet = $item->snippet;
       $thumb = 'https://i.ytimg.com/vi/' . $videoID . '/hqdefault.jpg';
+      $description = $vid_snippet->description;
+      $published = $vid_snippet->publishedAt;
+      $name = $vid_snippet->title ? $vid_snippet->title : 'A blog post on DISBYDEM by Tale Adewole';
 
       //Pull tags from YT and add them to existing post tags
       if (isset($vid_snippet->tags) && $vid_snippet->tags) {
@@ -90,6 +93,22 @@ function dis_by_dem_video_info($post_id, $videoID)
         }
       }
 
+      // Schema specific variables || prepare schema values 
+      $hostname = get_site_url();
+
+
+      $upload_date = date("Y-m-d", strtotime($published));
+
+      // build schema for video schema
+      $vid_schema = array(
+        '@type'         => 'VideoObject',
+        '@id'           => $hostname . '#/schema/VideoObject/{{' . $videoID . '}}',
+        'name'           => $name,
+        'description'   => $description,
+        'thumbnail'     => $thumb,
+        'uploadDate'     => $upload_date
+      );
+
       // Set video meta info:
       $metaValues = array(
         'video_info' => $vid_snippet->description,
@@ -97,7 +116,8 @@ function dis_by_dem_video_info($post_id, $videoID)
         'resourceId' => $item->id,
         'video_thumb' => $thumb,
         'video_link' => $videoLink,
-        'publishedAt' => $vid_snippet->publishedAt
+        'publishedAt' => $vid_snippet->publishedAt,
+        'post_video_schema' => $vid_schema,
       );
       foreach ($metaValues as $metaKey => $metaValue) {
         update_post_meta($post_id, $metaKey, $metaValue);
@@ -134,29 +154,4 @@ function dis_by_dem_strip_meta_info($post_id)
     delete_post_meta($post_id, $metaKey);
     error_log("cleared $metaKey from $post_id");
   }
-}
-
-/**
- * Build a video json schema displayed on single youtube posts
- * @param [int] $post_id [Accept WP_Post object or post_id]
- */
-function dbd_load_video_schema()
-{
-  // Schema specific variables || prepare schema values 
-  // Outsource to separate function
-  $hostname = get_site_url();
-  $name = 'Dis By Dem Video Link';
-  $description = 'Created by Tale Adewole';
-  // $published = get_the_date();
-  // $upload_date = date("Y-m-d", strtotime($published));
-
-  // build schema for video schema
-  // $vid_schema = array(
-  //   '@type'         => 'VideoObject',
-  //   '@id'           => $hostname . '#/schema/VideoObject/{{' . $id . '}}',
-  //   'name'           => $name,
-  //   'description'   => $description,
-  //   'thumbnail'     => $thumb,
-  //   'uploadDate'     => $upload_date
-  // );
 }
