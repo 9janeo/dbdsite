@@ -40,6 +40,7 @@ class Dbd_Admin
     add_action('admin_init', array('DBD_Channels', 'ready_channels_table_into_db'));
     add_action('admin_init', array('DBD_settings', 'dbd_register_settings'));
     add_action('admin_init', array('DBD_Channels', 'dbd_register_channel_settings'));
+    add_action('admin_init', array('DBD_Youtube', 'create_channel_playlists'));
   }
 
   public static function display_start_page()
@@ -125,10 +126,11 @@ class Dbd_Admin
           <?php
           $listIds = array();
           foreach ($playlists as $key => $playlist) :
+            // var_dump($playlist);
             // error_log("Displaying for " . json_encode($playlist));
             $id = isset($playlist->snippet) ? $playlist->id : $playlist->PlaylistId;
-            $itemCount = isset($playlist->contentDetails) ? $playlist->contentDetails->itemCount : $playlist->VideoList;
             $items = isset($playlist->items) ? $playlist->items : json_decode($playlist->VideoList);
+            $itemCount = isset($playlist->contentDetails) ? $playlist->contentDetails->itemCount : count((array)$items);
             if (isset($itemCount) && !($itemCount > 0)) {
               continue; # skip playlist if no items in it
             }

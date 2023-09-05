@@ -106,18 +106,30 @@ function understrap_child_customize_controls_js()
 add_action('customize_controls_enqueue_scripts', 'understrap_child_customize_controls_js');
 
 // Error logs wp_remote calls
-if (!function_exists('debug_wp_remote_post_and_get_request')) :
-  function debug_wp_remote_post_and_get_request($response, $context, $class, $r, $url)
-  {
-    error_log('----------------External post or get request----------------');
-    error_log($url);
-    error_log(json_encode($response));
-    // error_log($class);
-    // error_log($context);
-    // error_log(json_encode($r));
+// if (!function_exists('debug_wp_remote_post_and_get_request')) :
+//   function debug_wp_remote_post_and_get_request($response, $context, $class, $r, $url)
+//   {
+//     error_log('----------------External post or get request----------------');
+//     error_log($url);
+//     error_log(json_encode($response));
+//     // error_log($class);
+//     // error_log($context);
+//     // error_log(json_encode($r));
+//   }
+//   add_action('http_api_debug', 'debug_wp_remote_post_and_get_request', 10, 5);
+// endif;
+
+// Include custom post types in archive pages
+function custom_post_type_cat_filter($query)
+{
+  if (!is_admin() && $query->is_main_query()) {
+    if (is_archive() || is_home()) {
+      $query->set('post_type', array('post', 'youtube-post'));
+    }
   }
-  add_action('http_api_debug', 'debug_wp_remote_post_and_get_request', 10, 5);
-endif;
+}
+
+add_action('pre_get_posts', 'custom_post_type_cat_filter');
 
 if (function_exists('acf_add_options_page')) {
 
@@ -161,22 +173,14 @@ if (!function_exists('write_log')) {
 
 function api_actions()
 {
-  //  do things that concern the api here
   // Fetch playlists from YouTube
   // Sync with playlists in DB
-  // Fetch videos for each posdcast
   // Sync video details with youtube_post
-
-  error_log("Well, we are at the api_actions ajax handler: " .  json_encode($_POST));
-  // $playlists = Dbd_Youtube::get_playlists_from_yt_with_items($channel_id);
   $channel_id = $_POST['channel'];
   Dbd_Youtube::get_playlists_from_yt_with_items($channel_id);
-
-  echo 'API actions called';
   exit();
 }
 add_action('wp_ajax_api_actions', 'api_actions'); // executed when logged in
-// add_action('wp_ajax_nopriv_foo', 'foo' ); // executed when logged out
 
 // Add custom cron schedules
 add_filter('cron_schedules', 'dbd_add_custom_cron_schedules');
@@ -195,16 +199,4 @@ function dbd_add_custom_cron_schedules($schedules)
     'display'  => __('Every Half Hour', 'disbydem'),
   );
   return $schedules;
-}
-
-function dbd_get_cron_jobs()
-{
-  $cron_jobs = get_option('cron');
-  echo '<br><br>';
-  foreach ($cron_jobs as $job) {
-    echo '<div>';
-    var_dump($job);
-    echo '</div>';
-    echo '<br>';
-  }
 }

@@ -31,17 +31,14 @@ if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
         ?>
           <div>
             <?php
-            $attrs = ['id' => "yt_sync", 'channel_id' => "$channel_id"];
-            submit_button('Sync Channel', ' btn btn-danger', 'sync', true, $attrs);
+            $attrs = ['id' => "sync_$channel->channel_username", 'channel_id' => "$channel_id"];
+            submit_button('Sync Channel', ' yt_sync btn btn-danger', 'sync', true, $attrs);
             ?>
           </div>
           <h4>Playlists</h4>
         <?php
           // Display the video analytics page
-          $channels = DBD_Channels::get_dbd_channels('youtube');
-          $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
-          // $playlists = Dbd_Youtube::get_playlists_from_yt_with_items($channel_id);
-          // Dbd_Youtube::save_playlists($playlists);
+          $playlists = Dbd_Youtube::get_dbd_playlists($channel_id);
           if (isset($playlists) && $playlists) :
             Dbd_Admin::display_playlists($playlists, true);
           endif;
@@ -49,11 +46,5 @@ if ($_GET["page"] === 'video-analytics' || is_page('videos')) {
         ?>
       </div>
     </div>
-  <?php
-  }
-
-  ?>
-
-  <h1>Scheduled</h1>
-  <?php dbd_get_cron_jobs(); ?>
+  <?php } ?>
 </div>
