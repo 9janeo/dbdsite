@@ -30,11 +30,11 @@ function schedule_video_details_update($playlists)
   foreach ($playlists as $list) {
     if (isset($list->items)) {
       foreach ($list->items as $item) {
-        $latest = dbd_get_latest_scheduled('dbd_schedule_video_meta_and_tag_update') + (120 * $increment);
         $resource_id = $item->contentDetails->videoId;
         $post_id = $item->wp_id;
-        // set as a cron job with 2 minute intervals
+        // set as a cron jobs every 3 seconds intervals
         if (get_post_type($post_id) === 'youtube-post' && gettype($resource_id) == 'string') {
+          $latest = dbd_get_latest_scheduled('dbd_schedule_video_meta_and_tag_update') + (3 * $increment);
           $args = array($post_id, $resource_id);
           wp_schedule_single_event($latest, 'dbd_schedule_video_meta_and_tag_update', $args);
           $increment++;
@@ -171,9 +171,9 @@ function dbd_publish_checklist($post_id)
   $has_tags = has_tag('', $post_id);
   if ($has_video_id && $has_video_schema && $has_tags) {
     // check post status is not published
-    if (get_post_status($post_id) != 'published' && get_post_type($post_id) == 'youtube-post') {
+    if (get_post_status($post_id) != 'publish' && get_post_type($post_id) == 'youtube-post') {
       error_log("Checklist items confirmed, publishing... " . $post_id);
-      $yt_post = array('ID' => $post_id, 'post_status' => 'published');
+      $yt_post = array('ID' => $post_id, 'post_status' => 'publish');
       wp_update_post($yt_post);
     }
   }
