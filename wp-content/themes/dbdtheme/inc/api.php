@@ -68,6 +68,9 @@ function dis_by_dem_video_info($post_id, $videoID)
       $item = $result->items[0];
       $vid_snippet = $item->snippet;
       $thumb = 'https://i.ytimg.com/vi/' . $videoID . '/hqdefault.jpg';
+      $description = $vid_snippet->description;
+      $published = $vid_snippet->publishedAt;
+      $name = $vid_snippet->title ? $vid_snippet->title : 'A blog post on DISBYDEM by Tale Adewole';
 
       //Pull tags from YT and add them to existing post tags
       if (isset($vid_snippet->tags) && $vid_snippet->tags) {
@@ -90,6 +93,22 @@ function dis_by_dem_video_info($post_id, $videoID)
         }
       }
 
+      // Schema specific variables || prepare schema values 
+      $hostname = get_site_url();
+
+
+      $upload_date = date("Y-m-d", strtotime($published));
+
+      // build schema for video schema
+      $vid_schema = array(
+        '@type'         => 'VideoObject',
+        '@id'           => $hostname . '#/schema/VideoObject/{{' . $videoID . '}}',
+        'name'           => $name,
+        'description'   => $description,
+        'thumbnail'     => $thumb,
+        'uploadDate'     => $upload_date
+      );
+
       // Set video meta info:
       $metaValues = array(
         'video_info' => $vid_snippet->description,
@@ -97,12 +116,16 @@ function dis_by_dem_video_info($post_id, $videoID)
         'resourceId' => $item->id,
         'video_thumb' => $thumb,
         'video_link' => $videoLink,
-        'publishedAt' => $vid_snippet->publishedAt
+        'publishedAt' => $vid_snippet->publishedAt,
+        'post_video_schema' => $vid_schema,
       );
       foreach ($metaValues as $metaKey => $metaValue) {
         update_post_meta($post_id, $metaKey, $metaValue);
       }
     }
+
+    // Go through publish checklist
+    dbd_publish_checklist($post_id);
 
     // set featured image using YT thumbnail
     // - download image and save as attachement
@@ -137,26 +160,21 @@ function dis_by_dem_strip_meta_info($post_id)
 }
 
 /**
- * Build a video json schema displayed on single youtube posts
- * @param [int] $post_id [Accept WP_Post object or post_id]
+ * Checks a list of critera and updates post status from draft to publish if met
+ * @param [int] $post_id [description]
  */
-function dbd_load_video_schema()
+function dbd_publish_checklist($post_id)
 {
-  // Schema specific variables || prepare schema values 
-  // Outsource to separate function
-  $hostname = get_site_url();
-  $name = 'Dis By Dem Video Link';
-  $description = 'Created by Tale Adewole';
-  // $published = get_the_date();
-  // $upload_date = date("Y-m-d", strtotime($published));
-
-  // build schema for video schema
-  // $vid_schema = array(
-  //   '@type'         => 'VideoObject',
-  //   '@id'           => $hostname . '#/schema/VideoObject/{{' . $id . '}}',
-  //   'name'           => $name,
-  //   'description'   => $description,
-  //   'thumbnail'     => $thumb,
-  //   'uploadDate'     => $upload_date
-  // );
+  // if meta has values for 
+  $has_video_id = metadata_exists('post', $post_id, 'video_id');
+  $has_video_schema = metadata_exists('post', $post_id, 'post_video_schema');
+  $has_tags = has_tag('', $post_id);
+  if ($has_video_id && $has_video_schema && $has_tags) {
+    // check post status is not published
+    if (get_post_status($post_id) != 'published' && get_post_type($post_id) == 'youtube-post') {
+      error_log("Checklist items confirmed, publishing... " . $post_id);
+      $yt_post = array('ID' => $post_id, 'post_status' => 'published');
+      wp_update_post($yt_post);
+    }
+  }
 }
