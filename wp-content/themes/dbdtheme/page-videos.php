@@ -35,7 +35,7 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
         // $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
         $args = array(
           'post_type' => 'youtube-post',
-          'posts_per_page' => 5,
+          'posts_per_page' => 12,
           'paged' => $paged,
           'meta_query' => array(
             'key' => 'video_id',
