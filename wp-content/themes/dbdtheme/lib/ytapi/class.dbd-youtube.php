@@ -358,15 +358,15 @@ class Dbd_Youtube
     // prep the video for wp_posts custom post type
     $snippet = $item->snippet;
     $title = $snippet->title;
-    $content = $snippet->description;
+    $description = $snippet->description;
     $date = $snippet->publishedAt;
     $videoID = $item->contentDetails->videoId;
     $cat_id = get_cat_ID($plTitle);
     $videoLink = "https://www.youtube.com/watch?v={$videoID}&ab_channel=DISBYDEM";
-    $embedBlock = "
-      $videoLink
+    $embedBlock = $videoLink;
+    $content = "$embedBlock
+      $description
     ";
-    $content = $embedBlock . $content;
 
     // check if post exists
     $post_id = post_exists($title);
