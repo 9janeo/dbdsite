@@ -33,7 +33,7 @@ function schedule_video_details_update($playlists)
         $resource_id = $item->contentDetails->videoId;
         $post_id = $item->wp_id;
         // set as a cron jobs every 3 seconds intervals
-        if (get_post_type($post_id) === 'youtube-post' && gettype($resource_id) == 'string') {
+        if (get_post_type($post_id) == 'youtube-post' && gettype($resource_id) == 'string' && get_post_status($post_id) != 'publish') {
           $latest = dbd_get_latest_scheduled('dbd_schedule_video_meta_and_tag_update') + (3 * $increment);
           $args = array($post_id, $resource_id);
           wp_schedule_single_event($latest, 'dbd_schedule_video_meta_and_tag_update', $args);
