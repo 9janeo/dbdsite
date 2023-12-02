@@ -8,6 +8,14 @@
   }
 }
 
+.post-list.row{
+  row-gap: 1em;
+}
+
+ul.pagination {
+  margin-top: 1em;
+}
+
 nav.post-navigation{
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -55,9 +63,9 @@ blockquote, .wp-block-quote {
     }
     h2.card-title {
       a {
-        color: $dbd;
+        color: $darkred;
         &:hover {
-          color: $darkred;
+          color: $dbd;
         }
       }
     }

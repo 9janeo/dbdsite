@@ -28,7 +28,6 @@ $container = get_theme_mod('understrap_container_type');
         while (have_posts()) {
           the_post();
           get_template_part('loop-templates/content', 'single');
-          the_tags();
           understrap_post_nav();
 
           // If comments are open or we have at least one comment, load up the comment template.

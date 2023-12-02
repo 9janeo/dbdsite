@@ -14536,6 +14536,14 @@ figure.woocommerce-product-gallery__wrapper {
   text-align: center;
 }
 
+.post-list.row {
+  row-gap: 1em;
+}
+
+ul.pagination {
+  margin-top: 1em;
+}
+
 nav.post-navigation {
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -14593,10 +14601,10 @@ blockquote cite, .wp-block-quote cite {
   visibility: hidden;
 }
 .list-item .card h2.card-title a, .list-item .card .card-title.h2 a {
-  color: #ce2d19;
+  color: #5a0b00;
 }
 .list-item .card h2.card-title a:hover, .list-item .card .card-title.h2 a:hover {
-  color: #5a0b00;
+  color: #ce2d19;
 }
 
 #wrapper-navbar {

@@ -35,7 +35,7 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
         // $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
         $args = array(
           'post_type' => 'youtube-post',
-          'posts_per_page' => 5,
+          'posts_per_page' => 12,
           'paged' => $paged,
           'meta_query' => array(
             'key' => 'video_id',
@@ -47,7 +47,7 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
 
         <main class="site-main" id="main">
           <?php if ($vid_query->have_posts()) : ?>
-            <div class="post-list card-deck row">
+            <div class="post-list row">
               <?php
               while ($vid_query->have_posts()) : ?>
                 <div class="list-item col-lg-4 col-md-6">
@@ -69,19 +69,19 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
         ?>
       </div>
     </div>
-    <div class="row">
+    <!-- <div class="row">
       <h2 class="header" data-bs-toggle="collapse" data-bs-target="#playlist-section" aria-expanded="false" aria-controls="collapsePlayist">Playlists</h2>
       <hr>
       <div id="playlist-section" class="yt playlists collapse">
         <?php
-        $channels = DBD_Channels::get_dbd_channels('youtube');
-        $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
-        if (isset($playlists) && $playlists) :
-          Dbd_Admin::display_playlists($playlists, true);
-        endif;
+        // $channels = DBD_Channels::get_dbd_channels('youtube');
+        // $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
+        // if (isset($playlists) && $playlists) :
+        //   Dbd_Admin::display_playlists($playlists, true);
+        // endif;
         ?>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 <?php
