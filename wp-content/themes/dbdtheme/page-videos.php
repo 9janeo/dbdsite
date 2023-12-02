@@ -47,7 +47,7 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
 
         <main class="site-main" id="main">
           <?php if ($vid_query->have_posts()) : ?>
-            <div class="post-list card-deck row">
+            <div class="post-list row">
               <?php
               while ($vid_query->have_posts()) : ?>
                 <div class="list-item col-lg-4 col-md-6">

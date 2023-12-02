@@ -49,7 +49,7 @@ defined('ABSPATH') || exit;
     </header>
     <div class="entry-content card-text">
       <?php
-      the_excerpt();
+      // the_excerpt();
       understrap_link_pages();
       ?>
     </div>
