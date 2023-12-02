@@ -14597,10 +14597,10 @@ blockquote cite, .wp-block-quote cite {
   visibility: hidden;
 }
 .list-item .card h2.card-title a, .list-item .card .card-title.h2 a {
-  color: #ce2d19;
+  color: #5a0b00;
 }
 .list-item .card h2.card-title a:hover, .list-item .card .card-title.h2 a:hover {
-  color: #5a0b00;
+  color: #ce2d19;
 }
 
 #wrapper-navbar {

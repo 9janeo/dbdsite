@@ -69,19 +69,19 @@ include_once(__DIR__ . '/lib/ytapi/class.dbd-admin.php');
         ?>
       </div>
     </div>
-    <div class="row">
+    <!-- <div class="row">
       <h2 class="header" data-bs-toggle="collapse" data-bs-target="#playlist-section" aria-expanded="false" aria-controls="collapsePlayist">Playlists</h2>
       <hr>
       <div id="playlist-section" class="yt playlists collapse">
         <?php
-        $channels = DBD_Channels::get_dbd_channels('youtube');
-        $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
-        if (isset($playlists) && $playlists) :
-          Dbd_Admin::display_playlists($playlists, true);
-        endif;
+        // $channels = DBD_Channels::get_dbd_channels('youtube');
+        // $playlists = Dbd_Youtube::get_dbd_playlists($channels[0]->channel_id);
+        // if (isset($playlists) && $playlists) :
+        //   Dbd_Admin::display_playlists($playlists, true);
+        // endif;
         ?>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 <?php
